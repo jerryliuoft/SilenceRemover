@@ -1,6 +1,7 @@
-import { Component, Signal, createEffect, createSignal } from "solid-js";
+import { Component, createEffect, createSignal } from "solid-js";
 import { useKeyDownEvent } from "@solid-primitives/keyboard";
 import WaveSurfer from "wavesurfer.js";
+import RegionPlugin, { Region } from "wavesurfer.js/dist/plugins/regions.js";
 
 const VideoPlayerControls: Component<{
   videoPlayerRef: HTMLVideoElement;
@@ -8,7 +9,9 @@ const VideoPlayerControls: Component<{
 }> = (props) => {
   const [playSpeed, setPlaySpeed] = createSignal(1);
   const [currentTime, setCurrentTime] = createSignal(0);
-  const totalTime = props.videoPlayerRef.duration;
+  const [nextRegionMap, setNextRegionMap] = createSignal<{
+    [id: string]: Region;
+  }>();
 
   const event = useKeyDownEvent();
   // Keyboard Controls
@@ -16,11 +19,17 @@ const VideoPlayerControls: Component<{
     const e = event();
     if (e) {
       if (e.key == " ") {
-        props.wavesurferRef.playPause();
+        play();
       }
       e.preventDefault(); // prevent default behavior or last keydown event
     }
   });
+
+  const play = () => {
+    props.wavesurferRef.playPause();
+  };
+
+  props.videoPlayerRef.onclick = () => play();
 
   //   Get the relevant video information for the ref
   props.wavesurferRef.on("timeupdate", setCurrentTime);
@@ -37,7 +46,27 @@ const VideoPlayerControls: Component<{
   props.wavesurferRef.on("seeking", () => {
     props.videoPlayerRef.currentTime = props.wavesurferRef.getCurrentTime();
   });
-  
+
+  const wsRegions = props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
+  const createRegionMap = () => {
+    // Check current region and get the next region to be continued playing
+    // Loop through all the regions and create a map of the next region to play when the current one ends
+    const regionMap: { [id: string]: Region } = {};
+    const regions = wsRegions.getRegions();
+    regions.forEach((region: Region, idx: number) => {
+      regionMap[region.id] = regions[idx + 1];
+    });
+    setNextRegionMap(regionMap);
+  };
+
+  wsRegions.on("region-out", (region: Region) => {
+    const map = nextRegionMap();
+    if (!map) {
+      createRegionMap();
+      return;
+    }
+    map[region.id].play();
+  });
 
   const formatTime = (time: number) => {
     const formatter = new Intl.NumberFormat(undefined, {
@@ -58,17 +87,9 @@ const VideoPlayerControls: Component<{
   };
 
   return (
-    <div>
+    <div class="text-center">
       <button class="btn" onClick={() => props.wavesurferRef.playPause()}>
-        Play
-      </button>
-      <button
-        class="btn"
-        onClick={() => {
-          props.videoPlayerRef!.muted = !props.videoPlayerRef!.muted;
-        }}
-      >
-        volume
+        {nextRegionMap() ? "Play" : "Play, (loading in the background)"}
       </button>
       <button
         class="btn"
@@ -80,7 +101,8 @@ const VideoPlayerControls: Component<{
         {playSpeed()}x
       </button>
       <div>
-        {formatTime(currentTime())}/{formatTime(totalTime)}
+        {formatTime(currentTime())}/
+        {formatTime(props.wavesurferRef.getDuration())}
       </div>
     </div>
   );

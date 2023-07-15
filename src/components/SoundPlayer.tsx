@@ -1,4 +1,4 @@
-import { Component, Setter } from "solid-js";
+import { Component, Setter, Show, createSignal } from "solid-js";
 import WaveSurfer from "wavesurfer.js";
 import Timeline from "wavesurfer.js/dist/plugins/timeline.js";
 import RegionPlugin from "wavesurfer.js/dist/plugins/regions.js";
@@ -9,18 +9,17 @@ export interface Region {
 }
 
 const SoundPlayer: Component<{
-  //   videoPlayerRef: HTMLVideoElement;
   videoUrl: string;
   setWavesurferRef: Setter<WaveSurfer>;
   setRegions: Setter<Region[]>;
 }> = (props) => {
+  const [ready, setReady] = createSignal(false);
+
   const initWaveSurfer = (wavePlayerRef: HTMLElement) => {
     const ws = WaveSurfer.create({
       container: wavePlayerRef!,
       waveColor: "rgb(200, 0, 200)",
       progressColor: "rgb(100, 0, 100)",
-      // Pass the video element in the `media` param
-      //   media: props.videoPlayerRef,
       minPxPerSec: 50,
       url: props.videoUrl,
     });
@@ -29,7 +28,7 @@ const SoundPlayer: Component<{
     const wsRegions = ws.registerPlugin(RegionPlugin.create());
 
     ws.on("ready", () => {
-      console.log("READY!");
+      setReady(true);
     });
 
     // Create regions for each non-silent part of the audio
@@ -46,7 +45,7 @@ const SoundPlayer: Component<{
             end: region.end,
             content: index.toString(),
             drag: false,
-            resize: false,
+            resize: true,
           });
         });
       }
@@ -114,7 +113,21 @@ const SoundPlayer: Component<{
     return regions;
   };
 
-  return <div ref={initWaveSurfer}></div>;
+  return (
+    <div class="flex-auto text-center px-5 pt-2 pb-2">
+      <Show when={!ready()}>
+        <div
+          class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+          role="status"
+        >
+          <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            Loading...
+          </span>
+        </div>
+      </Show>
+      <div ref={initWaveSurfer}></div>
+    </div>
+  );
 };
 
 export default SoundPlayer;
