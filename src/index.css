@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .btn {
-  @apply text-gray-800 rounded-lg font-semibold py-2 px-4 border border-gray-400 shadow-lg;
+  @apply rounded-lg font-semibold py-2 px-4 border shadow-lg;
 }
 
 .card {

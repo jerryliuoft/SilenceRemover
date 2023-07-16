@@ -16,7 +16,6 @@ const VideoPlayerControls: Component<{
   const [nextRegionMap, setNextRegionMap] = createSignal<{
     [id: string]: Region;
   }>();
-  let addRef: HTMLInputElement;
 
   const event = useKeyDownEvent();
   // Keyboard Controls

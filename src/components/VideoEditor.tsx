@@ -11,7 +11,6 @@ const VideoEditor: Component<{
 }> = (props) => {
   const [videoPlayerRef, setvideoPlayerRef] = createSignal<HTMLVideoElement>();
   const [wavesurferRef, setWavesurferRef] = createSignal<WaveSurfer>();
-  const [download, setDownload] = createSignal<string>("");
 
   const videoUrl = () => {
     return props.video ? URL.createObjectURL(props.video) : "";
@@ -31,11 +30,7 @@ const VideoEditor: Component<{
           <VideoRender
             wavesurferRef={wavesurferRef()!}
             video={props.video}
-            setDownload={setDownload}
           ></VideoRender>
-          <Show when={download()}>
-            <a href={download()}>Right click me to save video</a>
-          </Show>
         </div>
       </div>
       <div class="card">

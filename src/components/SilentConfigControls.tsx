@@ -22,14 +22,14 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
             max="30"
             value={minSilentVal()}
             step="1"
-            class="flex flex-1 ml-10 h-2 rounded-lg bg-slate-300 accent-cyan-500 cursor-pointer mt-3"
+            class="flex flex-1 ml-10 h-2 rounded-lg bg-slate-200  accent-sky-500 cursor-pointer mt-3"
             onInput={(e) => {
               setminSilentVal(e.target.valueAsNumber);
             }}
           ></input>
           <input
             type="number"
-            class=" w-14 rounded-md ring-2 ring-cyan-500 ml-10 font-semibold text-center"
+            class=" w-14 rounded-md ring-2 ml-10 font-semibold text-center ring-sky-500"
             value={minSilentVal()}
             onInput={(e) => {
               setminSilentVal(e.target.valueAsNumber);
@@ -38,7 +38,7 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
         </div>
       </div>
       <button
-        class="btn bg-green-100 hover:bg-green-300"
+        class="btn hover:bg-sky-500 hover:text-white bg-sky-100 text-slate-900"
         onClick={() => {
           analyzeRegions(props.ws, { minVolumn: minSilentVal() });
         }}

@@ -3,14 +3,23 @@ import { Component, Setter } from "solid-js";
 const Uploader: Component<{
   setVideo: Setter<File>;
 }> = (props) => {
-  const uploadFile = async (fileInput: FileList | null) => {
+  const uploadFile = async (fileInput: FileList | null | undefined) => {
     if (!fileInput) return;
     props.setVideo(fileInput[0]);
   };
 
   return (
     <div>
-      <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+      <div
+        ondrop={(ev) => {
+          ev.preventDefault();
+          uploadFile(ev.dataTransfer?.files);
+        }}
+        ondragover={(e) => {
+          e.preventDefault();
+        }}
+        class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+      >
         <div class="text-center">
           <svg
             class="mx-auto h-12 w-12 text-gray-300"
