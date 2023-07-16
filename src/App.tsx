@@ -6,7 +6,7 @@ const App: Component = () => {
   const [video, setVideo] = createSignal<File>();
 
   return (
-    <div>
+    <div class="bg-slate-100">
       <header class="bg-white shadow">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <h1 class="text-3xl font-bold tracking-tight text-gray-900">
@@ -14,7 +14,7 @@ const App: Component = () => {
           </h1>
         </div>
       </header>
-      <main class="bg-slate-100 h-screen">
+      <main class="h-screen">
         <Show when={video()}>
           {(video) => <VideoEditor video={video()}></VideoEditor>}
         </Show>

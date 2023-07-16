@@ -50,7 +50,7 @@ const Uploader: Component<{
             <p class="pl-1">or drag and drop</p>
           </div>
           <p class="text-xs leading-5 text-gray-600">
-            PNG, JPG, GIF up to 10MB
+            mp4, mov, mp3, works better for files under 2gb.
           </p>
         </div>
       </div>
