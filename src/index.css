@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 .btn {
-  @apply bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow;
+  @apply text-gray-800 rounded-lg font-semibold py-2 px-4 border border-gray-400 shadow-lg;
 }
+
 .card {
   @apply bg-white shadow-lg rounded-md m-4;
+}
+
+.pill-btn {
+  @apply rounded-lg text-xs leading-6 font-semibold px-2 ring-2 ring-inset ring-slate-500 text-slate-500 hover:bg-slate-800 hover:text-slate-100;
 }

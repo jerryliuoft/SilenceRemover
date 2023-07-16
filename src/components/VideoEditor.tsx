@@ -4,12 +4,14 @@ import VideoPlayerControls from "./VideoPlayerControls";
 import SoundPlayer, { Region } from "./SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
 import VideoRender from "./VideoRender";
+import SilentConfigControls from "./SilentConfigControls";
 
 const VideoEditor: Component<{
   video: File;
 }> = (props) => {
   const [videoPlayerRef, setvideoPlayerRef] = createSignal<HTMLVideoElement>();
   const [wavesurferRef, setWavesurferRef] = createSignal<WaveSurfer>();
+  const [download, setDownload] = createSignal<string>("");
 
   const videoUrl = () => {
     return props.video ? URL.createObjectURL(props.video) : "";
@@ -24,11 +26,16 @@ const VideoEditor: Component<{
             videoUrl={videoUrl()}
           ></VideoPlayer>
         </div>
-        <div class="card flex-1 min-w-max">
+        <div class="card flex flex-1 flex-col">
+          <SilentConfigControls ws={wavesurferRef()!}></SilentConfigControls>
           <VideoRender
             wavesurferRef={wavesurferRef()!}
             video={props.video}
+            setDownload={setDownload}
           ></VideoRender>
+          <Show when={download()}>
+            <a href={download()}>Right click me to save video</a>
+          </Show>
         </div>
       </div>
       <div class="card">
