@@ -21,6 +21,7 @@
     "@ffmpeg/core": "^0.11.0",
     "@ffmpeg/ffmpeg": "^0.11.6",
     "@solid-primitives/keyboard": "^1.2.3",
+    "solid-icons": "^1.0.11",
     "solid-js": "^1.6.10",
     "wavesurfer.js": "^7.0.0-beta.11"
   }

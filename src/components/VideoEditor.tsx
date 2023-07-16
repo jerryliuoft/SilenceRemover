@@ -10,7 +10,6 @@ const VideoEditor: Component<{
 }> = (props) => {
   const [videoPlayerRef, setvideoPlayerRef] = createSignal<HTMLVideoElement>();
   const [wavesurferRef, setWavesurferRef] = createSignal<WaveSurfer>();
-  const [regions, setRegions] = createSignal<Region[]>([]);
 
   const videoUrl = () => {
     return props.video ? URL.createObjectURL(props.video) : "";
@@ -24,26 +23,24 @@ const VideoEditor: Component<{
             setVideoRef={setvideoPlayerRef}
             videoUrl={videoUrl()}
           ></VideoPlayer>
-          <Show when={videoPlayerRef() && wavesurferRef()}>
-            <VideoPlayerControls
-              videoPlayerRef={videoPlayerRef()!}
-              wavesurferRef={wavesurferRef()!}
-            ></VideoPlayerControls>
-          </Show>
         </div>
-        <div class="card flex-1">
+        <div class="card flex-1 min-w-max">
           <VideoRender
-            regions={regions()}
             wavesurferRef={wavesurferRef()!}
             video={props.video}
           ></VideoRender>
         </div>
       </div>
       <div class="card">
+        <Show when={videoPlayerRef() && wavesurferRef()}>
+          <VideoPlayerControls
+            videoPlayerRef={videoPlayerRef()!}
+            wavesurferRef={wavesurferRef()!}
+          ></VideoPlayerControls>
+        </Show>
         <SoundPlayer
           videoUrl={videoUrl()}
           setWavesurferRef={setWavesurferRef}
-          setRegions={setRegions}
         ></SoundPlayer>
       </div>
     </div>

@@ -15,15 +15,13 @@ const App: Component = () => {
         </div>
       </header>
       <main class="bg-slate-100 h-screen">
-        <Show
-          when={video()}
-          fallback={
-            <div class="card mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-              <Uploader setVideo={setVideo} />
-            </div>
-          }
-        >
+        <Show when={video()}>
           {(video) => <VideoEditor video={video()}></VideoEditor>}
+        </Show>
+        <Show when={!video()}>
+          <div class="card mx-auto py-6 sm:px-6 lg:px-8">
+            <Uploader setVideo={setVideo} />
+          </div>
         </Show>
       </main>
     </div>

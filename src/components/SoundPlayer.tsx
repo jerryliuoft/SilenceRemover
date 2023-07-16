@@ -11,17 +11,22 @@ export interface Region {
 const SoundPlayer: Component<{
   videoUrl: string;
   setWavesurferRef: Setter<WaveSurfer>;
-  setRegions: Setter<Region[]>;
 }> = (props) => {
   const [ready, setReady] = createSignal(false);
 
   const initWaveSurfer = (wavePlayerRef: HTMLElement) => {
     const ws = WaveSurfer.create({
       container: wavePlayerRef!,
-      waveColor: "rgb(200, 0, 200)",
-      progressColor: "rgb(100, 0, 100)",
+      waveColor: "#b45309",
+      progressColor: "#065f46",
       minPxPerSec: 50,
       url: props.videoUrl,
+      // Set a bar width
+      barWidth: 2,
+      // Optionally, specify the spacing between bars
+      barGap: 1,
+      // And the bar radius
+      barRadius: 1,
     });
     // Initialize the Timeline plugin
     ws.registerPlugin(Timeline.create());
@@ -36,7 +41,6 @@ const SoundPlayer: Component<{
       const decodedData = ws.getDecodedData();
       if (decodedData) {
         const regions = extractRegions(decodedData.getChannelData(0), duration);
-        props.setRegions(regions); // Send it back up to be proccessed by ffmpeg if finalized
 
         // Add regions to the waveform
         regions.forEach((region: Region, index) => {
@@ -46,6 +50,7 @@ const SoundPlayer: Component<{
             content: index.toString(),
             drag: false,
             resize: true,
+            color: "rgba(252, 231, 243, 0.5)",
           });
         });
       }
@@ -114,7 +119,7 @@ const SoundPlayer: Component<{
   };
 
   return (
-    <div class="flex-auto text-center px-5 pt-2 pb-2">
+    <div class="flex-auto text-center px-2 pt-1 pb-1 ring-2 ring-inset ring-slate-300 rounded-lg">
       <Show when={!ready()}>
         <div
           class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
