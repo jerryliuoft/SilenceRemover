@@ -33,7 +33,7 @@ const Uploader: Component<{
               clip-rule="evenodd"
             />
           </svg>
-          <div class="mt-4 flex text-sm leading-6 text-gray-600">
+          <div class="mt-4 flex text-base leading-6 text-gray-600">
             <label
               for="file-upload"
               class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
@@ -49,8 +49,8 @@ const Uploader: Component<{
             </label>
             <p class="pl-1">or drag and drop</p>
           </div>
-          <p class="text-xs leading-5 text-gray-600">
-            mp4, mov, mp3, works better for files under 2gb.
+          <p class="text-base leading-5 text-gray-600">
+            supports mp4, mov, mp3 etc, works best for files under 2gb.
           </p>
         </div>
       </div>

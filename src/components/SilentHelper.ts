@@ -23,15 +23,11 @@ export const analyzeRegions = (ws: WaveSurfer, configs: SilentConfig) => {
 };
 
 // Add regions to the waveform
-export const addRegions = (
-  regions: Region[],
-  wsRegions: RegionsPlugin,
-  postPadding = 0.5
-) => {
+export const addRegions = (regions: Region[], wsRegions: RegionsPlugin) => {
   regions.forEach((region: Region) => {
     wsRegions.addRegion({
-      start: region.start,
-      end: region.end,
+      start: region.start - 0.2 < 0 ? 0 : region.start - 0.2,
+      end: region.end + 0.2,
       drag: false,
       resize: true,
       color: "rgba(252, 231, 243, 0.5)",
@@ -43,11 +39,10 @@ export const addRegions = (
 export const extractRegions = (
   audioData: Float32Array,
   duration: number,
-  minVolumnPercent: number = 5,
-  postPadding: number = 0
+  minVolumnPercent: number = 5
 ) => {
-  const mergeDuration = 0.2;
-  const minRegionLength = 0.5;
+  const mergeDuration = 0.6;
+  const minRegionLength = 0.8;
   const scale = duration / audioData.length;
 
   // Find high and lowest volumn to calculate the threshold to filter on

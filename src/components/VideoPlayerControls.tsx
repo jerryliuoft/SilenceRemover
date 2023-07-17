@@ -78,8 +78,10 @@ const VideoPlayerControls: Component<{
       createRegionMap();
       return;
     }
-    if (map[region.id]) {
-      map[region.id].play();
+    if (props.wavesurferRef.isPlaying()) {
+      if (map[region.id]) {
+        map[region.id].play();
+      }
     }
   };
   wsRegions.on("region-out", regionOutCB);
