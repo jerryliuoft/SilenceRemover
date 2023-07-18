@@ -13,7 +13,7 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
         </h1>
         <div class="flex flex-auto flex-row mt-3">
           <div class="text-lg w-32 font-semibold text-slate-700">
-            Min volumn %
+            Min volume %
           </div>
           <input
             id="minmax-range"
@@ -40,7 +40,7 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
       <button
         class="btn hover:bg-sky-500 hover:text-white bg-sky-100 text-slate-900"
         onClick={() => {
-          analyzeRegions(props.ws, { minVolumn: minSilentVal() });
+          analyzeRegions(props.ws, { minVolume: minSilentVal() });
         }}
       >
         Analyze

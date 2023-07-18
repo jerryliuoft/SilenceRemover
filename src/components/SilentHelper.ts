@@ -3,7 +3,7 @@ import { Region } from "./SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
 
 export interface SilentConfig {
-  minVolumn?: number;
+  minVolume?: number;
   prePadding?: number;
   postPadding?: number;
 }
@@ -15,7 +15,7 @@ export const analyzeRegions = (ws: WaveSurfer, configs: SilentConfig) => {
     const regions = extractRegions(
       decodedData.getChannelData(0),
       ws.getDuration(),
-      configs.minVolumn
+      configs.minVolume
     );
     wsRegions.clearRegions();
     addRegions(regions, wsRegions);
@@ -39,23 +39,23 @@ export const addRegions = (regions: Region[], wsRegions: RegionsPlugin) => {
 export const extractRegions = (
   audioData: Float32Array,
   duration: number,
-  minVolumnPercent: number = 5
+  minVolumePercent: number = 5
 ) => {
   const mergeDuration = 0.6;
   const minRegionLength = 0.8;
   const scale = duration / audioData.length;
 
-  // Find high and lowest volumn to calculate the threshold to filter on
+  // Find high and lowest volume to calculate the threshold to filter on
   let high = 0;
   audioData.forEach((adata) => {
     if (adata > high) {
       high = adata;
     }
   });
-  const minVolumn = high * (minVolumnPercent / 100);
+  const minVolume = high * (minVolumePercent / 100);
   const audibleRegions = findAllAudibleRegions(
     audioData,
-    minVolumn,
+    minVolume,
     scale,
     mergeDuration
   );
@@ -72,7 +72,7 @@ export const extractRegions = (
 
 const findAllAudibleRegions = (
   audioData: Float32Array,
-  minVolumn: number,
+  minVolume: number,
   scale: number,
   mergeDuration: number
 ) => {
@@ -83,16 +83,16 @@ const findAllAudibleRegions = (
 
   // Find all audible regions
   for (let i = 1; i < audioData.length; i++) {
-    if (audioData[i] > minVolumn) {
+    if (audioData[i] > minVolume) {
       // Above threshold
-      if (audioData[i - 1] < minVolumn) {
+      if (audioData[i - 1] < minVolume) {
         start = i;
       } else {
         // do nothing same sound level as before
       }
     } else {
       // Below threshold
-      if (audioData[i - 1] < minVolumn) {
+      if (audioData[i - 1] < minVolume) {
         // do nothing same sound level as before
       } else {
         end = i;
