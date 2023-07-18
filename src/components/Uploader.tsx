@@ -38,7 +38,7 @@ const Uploader: Component<{
               for="file-upload"
               class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
             >
-              <span>Upload a file</span>
+              <span>Pick a video</span>
               <input
                 id="file-upload"
                 name="file-upload"
@@ -47,7 +47,7 @@ const Uploader: Component<{
                 onChange={(e) => uploadFile(e.target.files)}
               />
             </label>
-            <p class="pl-1">or drag and drop</p>
+            <p class="pl-1 ">or drag and drop here</p>
           </div>
           <p class="text-base leading-5 text-gray-600">
             supports mp4, mov, mp3 etc, works best for files under 2gb.

@@ -65,7 +65,15 @@ const VideoPlayerControls: Component<{
     // Check current region and get the next region to be continued playing
     // Loop through all the regions and create a map of the next region to play when the current one ends
     const regionMap: { [id: string]: Region } = {};
-    const regions = wsRegions.getRegions();
+    const regions = wsRegions.getRegions().sort((a, b) => {
+      if (a.start < b.start) {
+        return -1;
+      } else if (a.start > b.start) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
     regions.forEach((region: Region, idx: number) => {
       regionMap[region.id] = regions[idx + 1];
     });
@@ -81,6 +89,8 @@ const VideoPlayerControls: Component<{
     if (props.wavesurferRef.isPlaying()) {
       if (map[region.id]) {
         map[region.id].play();
+      } else {
+        props.wavesurferRef.pause();
       }
     }
   };
