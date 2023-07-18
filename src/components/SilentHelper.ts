@@ -30,7 +30,7 @@ export const addRegions = (regions: Region[], wsRegions: RegionsPlugin) => {
       end: region.end + 0.2,
       drag: false,
       resize: true,
-      color: "rgba(252, 231, 243, 0.5)",
+      color: "rgba(236, 252, 203, 0.5)",
     });
   });
 };

@@ -83,7 +83,7 @@ const VideoRender: Component<{
         </Show>
       </Show>
       <button
-        class="btn bg-red-100 hover:bg-red-500 hover:text-white m-2 "
+        class="btn bg-lime-100 hover:bg-lime-500 hover:text-white m-2 "
         onClick={work}
       >
         Render video

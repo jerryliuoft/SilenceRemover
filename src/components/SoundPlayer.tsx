@@ -18,8 +18,8 @@ const SoundPlayer: Component<{
   const initWaveSurfer = (wavePlayerRef: HTMLElement) => {
     const ws = WaveSurfer.create({
       container: wavePlayerRef!,
-      waveColor: "#b45309",
-      progressColor: "#065f46",
+      waveColor: "#c084fc",
+      progressColor: "#6b21a8",
       minPxPerSec: 50,
       url: props.videoUrl,
       // Set a bar width

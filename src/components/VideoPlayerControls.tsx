@@ -134,7 +134,7 @@ const VideoPlayerControls: Component<{
               end: currentTime() + 0.4,
               drag: true,
               resize: true,
-              color: "rgba(252, 231, 243, 0.5)",
+              color: "rgba(236, 252, 203, 0.5)",
             });
           }}
           class="pill-btn mr-10"
