@@ -4,6 +4,7 @@ import WaveSurfer from "wavesurfer.js";
 import RegionPlugin, { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import { IoPauseOutline } from "solid-icons/io";
 import { IoPlayOutline } from "solid-icons/io";
+import { formatTime } from "./SilentHelper";
 
 const VideoPlayerControls: Component<{
   videoPlayerRef: HTMLVideoElement;
@@ -98,24 +99,6 @@ const VideoPlayerControls: Component<{
 
   const regionClickCB = (region: Region) => {
     region.remove();
-  };
-
-  const formatTime = (time: number) => {
-    const formatter = new Intl.NumberFormat(undefined, {
-      minimumIntegerDigits: 2,
-    });
-    const miliSeconds = Math.floor((time % 1) * 100);
-    const seconds = Math.floor(time % 60);
-    const minutes = Math.floor(time / 60) % 60;
-    const hours = Math.floor(time / 3600);
-
-    if (hours === 0) {
-      return `${minutes}:${formatter.format(seconds)}:${miliSeconds}`;
-    } else {
-      return `${hours}:${formatter.format(minutes)}:${formatter.format(
-        seconds
-      )}${miliSeconds}`;
-    }
   };
 
   return (

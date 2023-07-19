@@ -1,9 +1,21 @@
-import { Component, createSignal } from "solid-js";
-import { analyzeRegions } from "./SilentHelper";
+import { Component, Show, createSignal } from "solid-js";
+import { analyzeRegions, formatTime } from "./SilentHelper";
 import WaveSurfer from "wavesurfer.js";
+import SliderInput from "./SliderInput";
 
 const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
   const [minSilentVal, setminSilentVal] = createSignal(5);
+  const [minDuration, setminDuration] = createSignal(0.8);
+  const [prepad, setprepad] = createSignal(0.2);
+  const [postpad, setpostpad] = createSignal(0.2);
+  const [newLen, setnewLen] = createSignal(0);
+  const cutPercent = () => {
+    if (props.ws) {
+      return Math.floor(
+        ((props.ws.getDuration() - newLen()) / props.ws.getDuration()) * 100
+      );
+    }
+  };
 
   return (
     <div class="m-2 flex flex-col justify-between flex-1">
@@ -11,40 +23,72 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
         <h1 class="text-2xl font-semibold leading-6 text-gray-900">
           Parameters
         </h1>
-        <div class="flex flex-auto flex-row mt-3">
-          <div class="text-lg w-32 font-semibold text-slate-700">
-            Min volume %
-          </div>
-          <input
-            id="minmax-range"
-            type="range"
-            min="0"
-            max="30"
+        <div class="">
+          <SliderInput
+            max={30}
+            title="Min volume"
+            description="Highlight regions with volume higher than"
+            step={1}
+            setter={setminSilentVal}
             value={minSilentVal()}
-            step="1"
-            class="flex flex-1 ml-10 h-2 rounded-lg bg-slate-200  accent-sky-500 cursor-pointer mt-3"
-            onInput={(e) => {
-              setminSilentVal(e.target.valueAsNumber);
-            }}
-          ></input>
-          <input
-            type="number"
-            class=" w-14 rounded-md ring-2 ml-10 font-semibold text-center ring-sky-500"
-            value={minSilentVal()}
-            onInput={(e) => {
-              setminSilentVal(e.target.valueAsNumber);
-            }}
-          ></input>
+            unit="%"
+          ></SliderInput>
+          <SliderInput
+            max={1}
+            step={0.01}
+            title="Min duration"
+            description="Highlight regions with volume longer than"
+            setter={setminDuration}
+            value={minDuration()}
+            unit="s"
+          ></SliderInput>
+          <SliderInput
+            max={1}
+            step={0.01}
+            title="Pre padding"
+            description="Add left padding to each highlighted region"
+            setter={setprepad}
+            value={prepad()}
+            unit="s"
+          ></SliderInput>
+          <SliderInput
+            max={1}
+            step={0.01}
+            title="Post padding"
+            description="Add right padding to each highlighted region"
+            setter={setpostpad}
+            value={postpad()}
+            unit="s"
+          ></SliderInput>
         </div>
       </div>
-      <button
-        class="btn hover:bg-sky-500 hover:text-white bg-sky-100 text-slate-900"
-        onClick={() => {
-          analyzeRegions(props.ws, { minVolume: minSilentVal() });
-        }}
-      >
-        Analyze
-      </button>
+      <div class="w-full">
+        <Show when={newLen()}>
+          <p>
+            Video is shortened by {cutPercent()}%, new duration is{" "}
+            {formatTime(newLen())}
+          </p>
+        </Show>
+        <button
+          class="btn w-full hover:bg-sky-500 hover:text-white bg-sky-100 text-slate-900"
+          onClick={() => {
+            const newLength = analyzeRegions(props.ws, {
+              minVolume: minSilentVal(),
+              minDuration: minDuration(),
+              prePadding: prepad(),
+              postPadding: postpad(),
+            });
+            if (newLength) {
+              setnewLen(newLength);
+              setTimeout(() => {
+                setnewLen(0);
+              }, 3000);
+            }
+          }}
+        >
+          Analyze
+        </button>
+      </div>
     </div>
   );
 };

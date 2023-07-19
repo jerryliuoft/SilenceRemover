@@ -3,9 +3,10 @@ import { Region } from "./SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
 
 export interface SilentConfig {
-  minVolume?: number;
-  prePadding?: number;
-  postPadding?: number;
+  minVolume: number;
+  minDuration: number;
+  prePadding: number;
+  postPadding: number;
 }
 
 export const analyzeRegions = (ws: WaveSurfer, configs: SilentConfig) => {
@@ -15,34 +16,52 @@ export const analyzeRegions = (ws: WaveSurfer, configs: SilentConfig) => {
     const regions = extractRegions(
       decodedData.getChannelData(0),
       ws.getDuration(),
-      configs.minVolume
+      configs
     );
+
     wsRegions.clearRegions();
-    addRegions(regions, wsRegions);
+    return addRegions(regions, wsRegions, configs, ws.getDuration());
   }
+  return 0;
 };
 
 // Add regions to the waveform
-export const addRegions = (regions: Region[], wsRegions: RegionsPlugin) => {
+export const addRegions = (
+  regions: Region[],
+  wsRegions: RegionsPlugin,
+  configs: SilentConfig,
+  duration: number
+) => {
+  let length = 0;
   regions.forEach((region: Region) => {
+    const paddedStart = region.start - configs.prePadding;
+    const paddedEnd = region.end + configs.postPadding;
+    const start = paddedStart < 0 ? 0 : paddedStart;
+    const end = paddedEnd > duration ? duration : paddedEnd;
+    length += end - start;
     wsRegions.addRegion({
-      start: region.start - 0.2 < 0 ? 0 : region.start - 0.2,
-      end: region.end + 0.2,
+      start,
+      end,
       drag: false,
       resize: true,
       color: "rgba(236, 252, 203, 0.5)",
     });
   });
+  return length;
 };
 
 // Find regions separated by silence
 export const extractRegions = (
   audioData: Float32Array,
   duration: number,
-  minVolumePercent: number = 5
+  configs: SilentConfig
 ) => {
-  const mergeDuration = 0.6;
-  const minRegionLength = 0.8;
+  const minVolumePercent = configs.minVolume; // 5
+  const mergeDuration =
+    configs.postPadding + configs.prePadding > 0.6
+      ? configs.postPadding + configs.prePadding
+      : 0.6;
+  const minRegionLength = configs.minDuration; //0.8;
   const scale = duration / audioData.length;
 
   // Find high and lowest volume to calculate the threshold to filter on
@@ -125,4 +144,22 @@ const findAllAudibleRegions = (
   }
 
   return audibleRegions;
+};
+
+export const formatTime = (time: number) => {
+  const formatter = new Intl.NumberFormat(undefined, {
+    minimumIntegerDigits: 2,
+  });
+  const miliSeconds = Math.floor((time % 1) * 100);
+  const seconds = Math.floor(time % 60);
+  const minutes = Math.floor(time / 60) % 60;
+  const hours = Math.floor(time / 3600);
+
+  if (hours === 0) {
+    return `${minutes}:${formatter.format(seconds)}:${miliSeconds}`;
+  } else {
+    return `${hours}:${formatter.format(minutes)}:${formatter.format(
+      seconds
+    )}${miliSeconds}`;
+  }
 };

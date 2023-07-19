@@ -41,9 +41,19 @@ const SoundPlayer: Component<{
     // Create regions for each non-silent part of the audio
     ws.on("decode", (duration) => {
       const decodedData = ws.getDecodedData();
+      const config = {
+        minVolume: 5,
+        minDuration: 0.8,
+        prePadding: 0.2,
+        postPadding: 0.2,
+      };
       if (decodedData) {
-        const regions = extractRegions(decodedData.getChannelData(0), duration);
-        addRegions(regions, wsRegions);
+        const regions = extractRegions(
+          decodedData.getChannelData(0),
+          duration,
+          config
+        );
+        addRegions(regions, wsRegions, config, duration);
       }
     });
 
