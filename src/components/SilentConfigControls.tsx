@@ -18,7 +18,7 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
   };
 
   return (
-    <div class="m-2 flex flex-col justify-between flex-1">
+    <div class="m-2 flex flex-col justify-between flex-1 min-w-max">
       <div>
         <h1 class="text-2xl font-semibold leading-6 text-gray-900">
           Parameters
