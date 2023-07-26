@@ -33,7 +33,7 @@ const Uploader: Component<{
               clip-rule="evenodd"
             />
           </svg>
-          <div class="mt-4 flex text-base leading-6 text-gray-600">
+          <div class="mt-4 flex text-base leading-6 text-gray-600 justify-center">
             <label
               for="file-upload"
               class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
@@ -50,7 +50,14 @@ const Uploader: Component<{
             <p class="pl-1 ">or drag and drop here</p>
           </div>
           <p class="text-base leading-5 text-gray-600">
-            supports mp4, mov, mp3 etc, works best for files under 2gb.
+            supports mp4, mov, mp3 etc, 2gb and under
+          </p>
+          <p class="text-base leading-5 text-gray-600">
+            There's no uploading, 2gb is the browser memory limit.
+          </p>
+          <p class="text-base leading-5 text-gray-600">
+            You'll need to download this as an app to bypass limit, instruction
+            coming soon
           </p>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { Component, Show, createEffect, createSignal } from "solid-js";
 import { FFmpeg, createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg"; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
 import WaveSurfer from "wavesurfer.js";
 import RegionPlugin, { Region } from "wavesurfer.js/dist/plugins/regions.js";
+import { timelineExport } from "./TimelineExport";
 
 const VideoRender: Component<{
   video: File;
@@ -11,6 +12,11 @@ const VideoRender: Component<{
   const [message, setMessage] = createSignal("");
   const [progress, setProgress] = createSignal(0);
   const [download, setDownload] = createSignal<string>("");
+  const [videoMeta, setVideoMeta] = createSignal<{
+    frame: number;
+    width: number;
+    height: number;
+  }>();
 
   //Loading in ffmpeg when this component renders
   createEffect(() => {
@@ -18,6 +24,17 @@ const VideoRender: Component<{
       log: true,
     });
     ffmpeg.setLogger(({ type, message }) => {
+      // >    Stream #0:0(und): Video: h264 (Main) (avc1 / 0x31637661)', ' yuv420p', ' 1920x1080 [SAR 1:1 DAR 16:9]', ' 10092 kb/s', ' 30.03 fps', ' 59.94 tbr', ' 30k tbn', ' 59.94 tbc (default)'
+      if (message.startsWith("    Stream #0:0(und): Video:")) {
+        const frame = message.match(/(\d+\.\d+)\sfps/)[1];
+        const resolution = message.match(/\s(\d\d+x\d\d+)\s\[/)[1].split("x");
+        setVideoMeta({
+          frame: Number(frame),
+          width: Number(resolution[0]),
+          height: Number(resolution[1]),
+        });
+      }
+
       if (type !== "info") {
         setMessage(message);
       }
@@ -41,7 +58,7 @@ const VideoRender: Component<{
     return cmd.join("+");
   };
 
-  const work = async () => {
+  const createXml = async () => {
     const wsRegions = props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
     const regions = wsRegions.getRegions();
 
@@ -49,7 +66,29 @@ const VideoRender: Component<{
       await ffmpeg.load();
     }
     ffmpeg.FS("writeFile", "video.mp4", await fetchFile(props.video));
+    await ffmpeg.run("-i", "video.mp4");
+    // The fetch of videoMeta is done in ffmpeg callback
+    const blob = timelineExport(
+      regions,
+      videoMeta()?.frame,
+      props.wavesurferRef.getDuration(),
+      videoMeta()?.width,
+      videoMeta()?.height,
+      props.video.name
+    );
 
+    const xml = URL.createObjectURL(blob);
+    setDownload(xml);
+    return;
+  };
+
+  const renderVideo = async () => {
+    const wsRegions = props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
+    const regions = wsRegions.getRegions();
+
+    if (!ffmpeg.isLoaded()) {
+      await ffmpeg.load();
+    }
     const regionCmd = regionToCommand(regions);
 
     await ffmpeg.run(
@@ -77,9 +116,15 @@ const VideoRender: Component<{
       </Show>
       <button
         class="btn bg-lime-100 hover:bg-lime-500 hover:text-white m-2 "
-        onClick={work}
+        onClick={renderVideo}
       >
-        Export
+        Export video
+      </button>
+      <button
+        class="btn bg-lime-100 hover:bg-lime-500 hover:text-white m-2 "
+        onClick={createXml}
+      >
+        Export timeline xml
       </button>
       <Show when={download()}>
         <div
@@ -105,7 +150,7 @@ const VideoRender: Component<{
                       <div class="mt-2">
                         <p class="text-sm text-gray-500">
                           {
-                            "Refresh the browser to select a new video or close this message to make additional changes"
+                            "Refresh the browser to select a new video or close this message to make additional changes. If you like this, why not share it to a friend?"
                           }
                         </p>
                       </div>

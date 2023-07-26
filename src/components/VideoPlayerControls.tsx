@@ -111,7 +111,6 @@ const VideoPlayerControls: Component<{
         </div>
         <button
           onClick={() => {
-            console.log(currentTime());
             wsRegions.addRegion({
               start: currentTime() - 0.4,
               end: currentTime() + 0.4,
