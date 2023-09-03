@@ -28,7 +28,7 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
             max={30}
             title="Min volume"
             description="Highlight regions with volume higher than"
-            step={1}
+            step={0.01}
             setter={setminSilentVal}
             value={minSilentVal()}
             unit="%"
