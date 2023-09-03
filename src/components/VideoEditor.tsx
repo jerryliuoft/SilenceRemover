@@ -1,7 +1,7 @@
-import { Component, Setter, Show, createSignal } from "solid-js";
+import { Component, Show, createSignal } from "solid-js";
 import VideoPlayer from "./VideoPlayer";
 import VideoPlayerControls from "./VideoPlayerControls";
-import SoundPlayer, { Region } from "./SoundPlayer";
+import SoundPlayer from "./SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
 import VideoRender from "./VideoRender";
 import SilentConfigControls from "./SilentConfigControls";

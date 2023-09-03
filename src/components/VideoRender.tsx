@@ -25,7 +25,7 @@ const VideoRender: Component<{
     });
     ffmpeg.setLogger(({ type, message }) => {
       // >    Stream #0:0(und): Video: h264 (Main) (avc1 / 0x31637661)', ' yuv420p', ' 1920x1080 [SAR 1:1 DAR 16:9]', ' 10092 kb/s', ' 30.03 fps', ' 59.94 tbr', ' 30k tbn', ' 59.94 tbc (default)'
-      if (message.startsWith("    Stream #0:0(und): Video:")) {
+      if (message.includes("fps") && message.includes("kb/s")) {
         const frame = message.match(/(\d+\.\d+)\sfps/)[1];
         const resolution = message.match(/\s(\d\d+x\d\d+)\s\[/)[1].split("x");
         setVideoMeta({
@@ -90,6 +90,7 @@ const VideoRender: Component<{
       await ffmpeg.load();
     }
     const regionCmd = regionToCommand(regions);
+    ffmpeg.FS("writeFile", "video.mp4", await fetchFile(props.video));
 
     await ffmpeg.run(
       "-i",
