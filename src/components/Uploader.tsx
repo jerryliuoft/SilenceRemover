@@ -50,14 +50,13 @@ const Uploader: Component<{
             <p class="pl-1 ">or drag and drop here</p>
           </div>
           <p class="text-base leading-5 text-gray-600">
-            supports mp4, mov, mp3 etc, 2gb and under
+            supports mp4, mov, mp3 etc
           </p>
           <p class="text-base leading-5 text-gray-600">
-            There's no uploading, 2gb is the browser memory limit.
+            I've not tested all browsers and file types, why not give it a try.
           </p>
           <p class="text-base leading-5 text-gray-600">
-            You'll need to download this as an app to bypass limit, instruction
-            coming soon
+            Chrome has a 2gb limit on file size, not sure about other browsers.
           </p>
         </div>
       </div>

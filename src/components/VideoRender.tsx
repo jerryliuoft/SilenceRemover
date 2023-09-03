@@ -1,5 +1,6 @@
 import { Component, Show, createEffect, createSignal } from "solid-js";
-import { FFmpeg, createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg"; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
+import { FFmpeg } from "@ffmpeg/ffmpeg"; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
+import { fetchFile, toBlobURL } from "@ffmpeg/util";
 import WaveSurfer from "wavesurfer.js";
 import RegionPlugin, { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import { timelineExport } from "./TimelineExport";
@@ -18,12 +19,34 @@ const VideoRender: Component<{
     height: number;
   }>();
 
+  // Loading ffmpeg
+  const load = async () => {
+    // Multithread url
+    // const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.2/dist/esm";
+
+    // singlethread url
+    const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.2/dist/esm";
+    // toBlobURL is used to bypass CORS issue, urls with the same
+    // domain can be used directly.
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+      wasmURL: await toBlobURL(
+        `${baseURL}/ffmpeg-core.wasm`,
+        "application/wasm"
+      ),
+      // workerURL: await toBlobURL(
+      //   `${baseURL}/ffmpeg-core.worker.js`,
+      //   "text/javascript"
+      // ),
+    });
+    console.log("ffmpeg is loaded");
+    console.log({ crossOriginIsolated });
+  };
+
   //Loading in ffmpeg when this component renders
   createEffect(() => {
-    ffmpeg = createFFmpeg({
-      log: true,
-    });
-    ffmpeg.setLogger(({ type, message }) => {
+    ffmpeg = new FFmpeg();
+    ffmpeg.on("log", ({ type, message }) => {
       // >    Stream #0:0(und): Video: h264 (Main) (avc1 / 0x31637661)', ' yuv420p', ' 1920x1080 [SAR 1:1 DAR 16:9]', ' 10092 kb/s', ' 30.03 fps', ' 59.94 tbr', ' 30k tbn', ' 59.94 tbc (default)'
       if (message.includes("fps") && message.includes("kb/s")) {
         const frame = message.match(/(\d+\.\d+)\sfps/)[1];
@@ -34,12 +57,14 @@ const VideoRender: Component<{
           height: Number(resolution[1]),
         });
       }
+      console.log(message);
 
       if (type !== "info") {
         setMessage(message);
       }
     });
-    ffmpeg.setProgress(({ ratio }) => {
+    ffmpeg.on("progress", (ffmpegProgress) => {
+      const ratio = ffmpegProgress.progress;
       if (ratio >= 0 && ratio <= 1) {
         setProgress(ratio * 100);
       }
@@ -62,11 +87,11 @@ const VideoRender: Component<{
     const wsRegions = props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
     const regions = wsRegions.getRegions();
 
-    if (!ffmpeg.isLoaded()) {
-      await ffmpeg.load();
+    if (!ffmpeg.loaded) {
+      await load();
     }
-    ffmpeg.FS("writeFile", "video.mp4", await fetchFile(props.video));
-    await ffmpeg.run("-i", "video.mp4");
+    await ffmpeg.writeFile("video.mp4", await fetchFile(props.video));
+    await ffmpeg.exec(["-i", "video.mp4"]);
     // The fetch of videoMeta is done in ffmpeg callback
     const blob = timelineExport(
       regions,
@@ -86,23 +111,23 @@ const VideoRender: Component<{
     const wsRegions = props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
     const regions = wsRegions.getRegions();
 
-    if (!ffmpeg.isLoaded()) {
-      await ffmpeg.load();
+    if (!ffmpeg.loaded) {
+      await load();
     }
     const regionCmd = regionToCommand(regions);
-    ffmpeg.FS("writeFile", "video.mp4", await fetchFile(props.video));
+    await ffmpeg.writeFile("video.mp4", await fetchFile(props.video));
 
-    await ffmpeg.run(
+    await ffmpeg.exec([
       "-i",
       "video.mp4",
       "-vf",
       "select='" + regionCmd + "',setpts=N/FRAME_RATE/TB",
       "-af",
       "aselect='" + regionCmd + "',asetpts=N/SR/TB",
-      "out.mp4"
-    );
+      "out.mp4",
+    ]);
 
-    const data = ffmpeg.FS("readFile", "out.mp4");
+    const data = (await ffmpeg.readFile("out.mp4")) as any;
     const dataBlob = new Blob([data.buffer], { type: "video/mp4" });
     const sound = URL.createObjectURL(dataBlob);
     setDownload(sound);
@@ -146,7 +171,7 @@ const VideoRender: Component<{
                         class="text-base font-semibold leading-6 text-gray-900"
                         id="modal-title"
                       >
-                        Your video is ready!
+                        Your download is ready!
                       </h3>
                       <div class="mt-2">
                         <p class="text-sm text-gray-500">
