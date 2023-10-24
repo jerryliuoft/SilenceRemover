@@ -26,7 +26,7 @@ const VideoRender: Component<{
     console.log("Loading ffmpeg with multithread " + mt);
     const baseURL = mt
       ? "https://unpkg.com/@ffmpeg/core-mt@0.12.4/dist/esm"
-      : "https://unpkg.com/@ffmpeg/core-mt@0.12.4/dist/umd";
+      : "https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm";
 
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
@@ -54,10 +54,6 @@ const VideoRender: Component<{
         wasmURL: await toBlobURL(
           `${baseURL}/ffmpeg-core.wasm`,
           "application/wasm"
-        ),
-        workerURL: await toBlobURL(
-          `${baseURL}/ffmpeg-core.worker.js`,
-          "text/javascript"
         ),
       });
     }
