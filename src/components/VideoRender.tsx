@@ -11,6 +11,7 @@ const VideoRender: Component<{
 }> = (props) => {
   let ffmpeg: FFmpeg;
   const [message, setMessage] = createSignal("");
+  const [multiThread, setMultiThread] = createSignal(false);
   const [progress, setProgress] = createSignal(0);
   const [download, setDownload] = createSignal<string>("");
   const [videoMeta, setVideoMeta] = createSignal<{
@@ -20,25 +21,46 @@ const VideoRender: Component<{
   }>();
 
   // Loading ffmpeg
-  const load = async () => {
+  const load = async (mt: boolean) => {
     // Multithread url
-    // const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.2/dist/esm";
+    console.log("Loading ffmpeg with multithread " + mt);
+    const baseURL = mt
+      ? "https://unpkg.com/@ffmpeg/core-mt@0.12.4/dist/esm"
+      : "https://unpkg.com/@ffmpeg/core-mt@0.12.4/dist/umd";
 
-    // singlethread url
-    const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.2/dist/esm";
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
-    await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.wasm`,
-        "application/wasm"
-      ),
-      // workerURL: await toBlobURL(
-      //   `${baseURL}/ffmpeg-core.worker.js`,
-      //   "text/javascript"
-      // ),
-    });
+    if (mt == true) {
+      await ffmpeg.load({
+        coreURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.js`,
+          "text/javascript"
+        ),
+        wasmURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.wasm`,
+          "application/wasm"
+        ),
+        workerURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.worker.js`,
+          "text/javascript"
+        ),
+      });
+    } else {
+      await ffmpeg.load({
+        coreURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.js`,
+          "text/javascript"
+        ),
+        wasmURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.wasm`,
+          "application/wasm"
+        ),
+        workerURL: await toBlobURL(
+          `${baseURL}/ffmpeg-core.worker.js`,
+          "text/javascript"
+        ),
+      });
+    }
     console.log("ffmpeg is loaded");
     console.log({ crossOriginIsolated });
   };
@@ -47,20 +69,18 @@ const VideoRender: Component<{
   createEffect(() => {
     ffmpeg = new FFmpeg();
     ffmpeg.on("log", ({ type, message }) => {
-      // >    Stream #0:0(und): Video: h264 (Main) (avc1 / 0x31637661)', ' yuv420p', ' 1920x1080 [SAR 1:1 DAR 16:9]', ' 10092 kb/s', ' 30.03 fps', ' 59.94 tbr', ' 30k tbn', ' 59.94 tbc (default)'
-      if (message.includes("fps") && message.includes("kb/s")) {
-        const frame = message.match(/(\d+\.\d+)\sfps/)[1];
-        const resolution = message.match(/\s(\d\d+x\d\d+)\s\[/)[1].split("x");
-        setVideoMeta({
-          frame: Number(frame),
-          width: Number(resolution[0]),
-          height: Number(resolution[1]),
-        });
-      }
-      console.log(message);
-
       if (type !== "info") {
         setMessage(message);
+      }
+      // >    Stream #0:0(und): Video: h264 (Main) (avc1 / 0x31637661)', ' yuv420p', ' 1920x1080 [SAR 1:1 DAR 16:9]', ' 10092 kb/s', ' 30.03 fps', ' 59.94 tbr', ' 30k tbn', ' 59.94 tbc (default)'
+      if (message.includes("fps") && message.includes("kb/s")) {
+        const frame = message.match(/\s([\d\.]+)\sfps/)[1];
+        const resolution = message.match(/\s(\d\d+)x(\d\d+)[\s\,]/);
+        setVideoMeta({
+          frame: Number(frame),
+          width: Number(resolution[1]),
+          height: Number(resolution[2]),
+        });
       }
     });
     ffmpeg.on("progress", (ffmpegProgress) => {
@@ -88,7 +108,7 @@ const VideoRender: Component<{
     const regions = wsRegions.getRegions();
 
     if (!ffmpeg.loaded) {
-      await load();
+      await load(multiThread());
     }
     await ffmpeg.writeFile("video.mp4", await fetchFile(props.video));
     await ffmpeg.exec(["-i", "video.mp4"]);
@@ -112,7 +132,7 @@ const VideoRender: Component<{
     const regions = wsRegions.getRegions();
 
     if (!ffmpeg.loaded) {
-      await load();
+      await load(multiThread());
     }
     const regionCmd = regionToCommand(regions);
     await ffmpeg.writeFile("video.mp4", await fetchFile(props.video));
@@ -134,6 +154,28 @@ const VideoRender: Component<{
   };
   return (
     <>
+      <div class="ml-4">
+        <div class="flex items-center mb-4">
+          <input
+            id="checkbox"
+            checked={multiThread()}
+            onClick={(e) => {
+              const checked = (e.target as HTMLInputElement).checked;
+              setMultiThread(checked);
+              load(checked);
+            }}
+            type="checkbox"
+            value=""
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          ></input>
+          <label
+            for="checkbox"
+            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            Use multiThread (faster, but less stable)
+          </label>
+        </div>
+      </div>
       <Show when={message()}>
         <p class="font-medium text-slate-700 mt-4 h-32 m-2">{message()}</p>
         <p class="text-center text-slate-700 font-bold">
