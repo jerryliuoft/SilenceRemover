@@ -2,6 +2,7 @@ import { Component, Setter, Show, createSignal } from "solid-js";
 import WaveSurfer from "wavesurfer.js";
 import Timeline from "wavesurfer.js/dist/plugins/timeline.js";
 import RegionPlugin from "wavesurfer.js/dist/plugins/regions.js";
+import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.js";
 import { addRegions, extractRegions } from "./SilentHelper";
 
 export interface Region {
@@ -30,9 +31,10 @@ const SoundPlayer: Component<{
       barRadius: 1,
       normalize: true,
     });
-    // Initialize the Timeline plugin
+    // KEEP THE PLUGINS IN THIS ORDER, because they are retrieved using an array so order matters
     ws.registerPlugin(Timeline.create());
     const wsRegions = ws.registerPlugin(RegionPlugin.create());
+    ws.registerPlugin(ZoomPlugin.create());
 
     ws.on("ready", () => {
       setReady(true);
