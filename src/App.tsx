@@ -9,9 +9,11 @@ const App: Component = () => {
     <div class="bg-slate-100">
       <header class="bg-white shadow">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-            Free silence remover
-          </h1>
+          <a href="https://videosilenceremover.web.app">
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+              Free silence remover
+            </h1>
+          </a>
         </div>
       </header>
       <main class="h-screen">
@@ -43,8 +45,7 @@ const App: Component = () => {
               </a>
             </p>
             <p class="text-slate-600 font-semibold text-sm">
-              Still got few more features I have in mind like paddings, xml
-              export etc! Feel free to send a PR at
+              If you encountered any problems, feel free to send a PR at
               <a
                 class=" text-amber-500 text-xl"
                 href={"https://github.com/jerryliuoft/SilenceRemover"}

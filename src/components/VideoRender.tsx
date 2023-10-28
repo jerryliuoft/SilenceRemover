@@ -168,7 +168,8 @@ const VideoRender: Component<{
             for="checkbox"
             class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            Use multiThread (faster, but less stable)
+            Use multiThread (faster encoding, dosen't work on chrome for me, try
+            firefox)
           </label>
         </div>
       </div>
