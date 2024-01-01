@@ -11,7 +11,6 @@ const VideoRender: Component<{
 }> = (props) => {
   let ffmpeg: FFmpeg;
   const [message, setMessage] = createSignal("");
-  const [multiThread, setMultiThread] = createSignal(false);
   const [progress, setProgress] = createSignal(0);
   const [download, setDownload] = createSignal<string>("");
   const [videoMeta, setVideoMeta] = createSignal<{
@@ -21,42 +20,22 @@ const VideoRender: Component<{
   }>();
 
   // Loading ffmpeg
-  const load = async (mt: boolean) => {
-    // Multithread url
-    console.log("Loading ffmpeg with multithread " + mt);
-    const baseURL = mt
-      ? "https://unpkg.com/@ffmpeg/core-mt@0.12.4/dist/esm"
-      : "https://unpkg.com/@ffmpeg/core@0.12.4/dist/esm";
+  const load = async () => {
+    const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.4/dist/esm";
 
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
-    if (mt == true) {
-      await ffmpeg.load({
-        coreURL: await toBlobURL(
-          `${baseURL}/ffmpeg-core.js`,
-          "text/javascript"
-        ),
-        wasmURL: await toBlobURL(
-          `${baseURL}/ffmpeg-core.wasm`,
-          "application/wasm"
-        ),
-        workerURL: await toBlobURL(
-          `${baseURL}/ffmpeg-core.worker.js`,
-          "text/javascript"
-        ),
-      });
-    } else {
-      await ffmpeg.load({
-        coreURL: await toBlobURL(
-          `${baseURL}/ffmpeg-core.js`,
-          "text/javascript"
-        ),
-        wasmURL: await toBlobURL(
-          `${baseURL}/ffmpeg-core.wasm`,
-          "application/wasm"
-        ),
-      });
-    }
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+      wasmURL: await toBlobURL(
+        `${baseURL}/ffmpeg-core.wasm`,
+        "application/wasm"
+      ),
+      workerURL: await toBlobURL(
+        `${baseURL}/ffmpeg-core.worker.js`,
+        "text/javascript"
+      ),
+    });
     console.log("ffmpeg is loaded");
     console.log({ crossOriginIsolated });
   };
@@ -104,7 +83,7 @@ const VideoRender: Component<{
     const regions = wsRegions.getRegions();
 
     if (!ffmpeg.loaded) {
-      await load(multiThread());
+      await load();
     }
     await ffmpeg.writeFile("video.mp4", await fetchFile(props.video));
     await ffmpeg.exec(["-i", "video.mp4"]);
@@ -128,7 +107,7 @@ const VideoRender: Component<{
     const regions = wsRegions.getRegions();
 
     if (!ffmpeg.loaded) {
-      await load(multiThread());
+      await load();
     }
     const regionCmd = regionToCommand(regions);
     await ffmpeg.writeFile("video.mp4", await fetchFile(props.video));
@@ -136,6 +115,8 @@ const VideoRender: Component<{
     await ffmpeg.exec([
       "-i",
       "video.mp4",
+      "-threads", // -threads 4 is to solve chrome not able to auto detect threads and hangs on mt.
+      "4",
       "-vf",
       "select='" + regionCmd + "',setpts=N/FRAME_RATE/TB",
       "-af",
@@ -150,29 +131,6 @@ const VideoRender: Component<{
   };
   return (
     <>
-      <div class="ml-4">
-        <div class="flex items-center mb-4">
-          <input
-            id="checkbox"
-            checked={multiThread()}
-            onClick={(e) => {
-              const checked = (e.target as HTMLInputElement).checked;
-              setMultiThread(checked);
-              load(checked);
-            }}
-            type="checkbox"
-            value=""
-            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          ></input>
-          <label
-            for="checkbox"
-            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-          >
-            Use multiThread (faster encoding, dosen't work on chrome for me, try
-            firefox)
-          </label>
-        </div>
-      </div>
       <Show when={message()}>
         <p class="font-medium text-slate-700 mt-4 h-32 m-2">{message()}</p>
         <p class="text-center text-slate-700 font-bold">

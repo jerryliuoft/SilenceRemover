@@ -50,13 +50,7 @@ const Uploader: Component<{
             <p class="pl-1 ">or drag and drop here</p>
           </div>
           <p class="text-base leading-5 text-gray-600">
-            supports mp4, mov, mp3 etc
-          </p>
-          <p class="text-base leading-5 text-gray-600">
-            I've not tested all browsers and file types, why not give it a try.
-          </p>
-          <p class="text-base leading-5 text-gray-600">
-            Chrome has a 2gb limit on file size, not sure about other browsers.
+            supports mp4, mov etc (2gb limit for chrome)
           </p>
         </div>
       </div>
