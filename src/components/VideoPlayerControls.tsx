@@ -9,6 +9,7 @@ import { formatTime } from "./SilentHelper";
 const VideoPlayerControls: Component<{
   videoPlayerRef: HTMLVideoElement;
   wavesurferRef: WaveSurfer;
+  videoName: string;
 }> = (props) => {
   const [playSpeed, setPlaySpeed] = createSignal(1);
   const [currentTime, setCurrentTime] = createSignal(0);
@@ -81,6 +82,20 @@ const VideoPlayerControls: Component<{
     setNextRegionMap(regionMap);
   };
 
+  // Save it to disk to be restored when user refreshes page
+  createEffect(() => {
+    if (!nextRegionMap() || props.videoName.length < 1) {
+      return;
+    }
+    localStorage.setItem(
+      "zones",
+      JSON.stringify({
+        file: props.videoName,
+        region: wsRegions.getRegions(),
+      })
+    );
+  });
+
   const regionOutCB = (region: Region) => {
     const map = nextRegionMap();
     if (!map) {
@@ -96,6 +111,9 @@ const VideoPlayerControls: Component<{
     }
   };
   wsRegions.on("region-out", regionOutCB);
+  wsRegions.on("region-created", createRegionMap);
+  wsRegions.on("destroy", createRegionMap);
+  wsRegions.on("region-updated", createRegionMap);
 
   const regionClickCB = (region: Region) => {
     region.remove();

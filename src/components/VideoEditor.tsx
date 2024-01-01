@@ -38,11 +38,13 @@ const VideoEditor: Component<{
           <VideoPlayerControls
             videoPlayerRef={videoPlayerRef()!}
             wavesurferRef={wavesurferRef()!}
+            videoName={props.video.name}
           ></VideoPlayerControls>
         </Show>
         <SoundPlayer
           videoUrl={videoUrl()}
           setWavesurferRef={setWavesurferRef}
+          videoName={props.video.name}
         ></SoundPlayer>
       </div>
     </div>

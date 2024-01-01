@@ -4,6 +4,7 @@ import Timeline from "wavesurfer.js/dist/plugins/timeline.js";
 import RegionPlugin from "wavesurfer.js/dist/plugins/regions.js";
 import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.js";
 import { addRegions, extractRegions } from "./SilentHelper";
+import { IoStorefrontOutline } from "solid-icons/io";
 
 export interface Region {
   start: number;
@@ -13,6 +14,7 @@ export interface Region {
 const SoundPlayer: Component<{
   videoUrl: string;
   setWavesurferRef: Setter<WaveSurfer>;
+  videoName: string;
 }> = (props) => {
   const [ready, setReady] = createSignal(false);
 
@@ -50,12 +52,21 @@ const SoundPlayer: Component<{
         postPadding: 0.2,
       };
       if (decodedData) {
-        const regions = extractRegions(
-          decodedData.getChannelData(0),
-          duration,
-          config
-        );
-        addRegions(regions, wsRegions, config, duration);
+        const store = JSON.parse(localStorage.getItem("zones") || "{}");
+        if (store && store.file === props.videoName) {
+          for (const key in store.region) {
+            const cur = store.region[key];
+            wsRegions.addRegion(cur);
+          }
+        } else {
+          localStorage.clear();
+          const regions = extractRegions(
+            decodedData.getChannelData(0),
+            duration,
+            config
+          );
+          addRegions(regions, wsRegions, config, duration);
+        }
       }
     });
 
