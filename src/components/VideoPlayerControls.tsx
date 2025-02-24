@@ -137,7 +137,7 @@ const VideoPlayerControls: Component<{
               color: "rgba(236, 252, 203, 0.5)",
             });
           }}
-          class="pill-btn mr-10"
+          class="rounded-lg text-xs leading-6 font-semibold px-2 ring-2 ring-inset ring-slate-500 text-slate-500 hover:bg-slate-800 hover:text-slate-50 mr-10"
         >
           Zone add
         </button>
@@ -162,7 +162,7 @@ const VideoPlayerControls: Component<{
               props.videoPlayerRef!.playbackRate = playSpeed();
               props.wavesurferRef.setPlaybackRate(playSpeed());
             }}
-            class="pill-btn ml-10 w-10 "
+            class="rounded-lg text-xs leading-6 font-semibold px-2 ring-2 ring-inset ring-slate-500 text-slate-500 hover:bg-slate-800 hover:text-slate-50 ml-10 w-10 "
           >
             {playSpeed()}x
           </button>

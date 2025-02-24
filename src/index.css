@@ -1,15 +1,1 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-.btn {
-  @apply rounded-lg font-semibold py-2 px-4 border shadow-lg;
-}
-
-.card {
-  @apply bg-white shadow-lg rounded-md m-4;
-}
-
-.pill-btn {
-  @apply rounded-lg text-xs leading-6 font-semibold px-2 ring-2 ring-inset ring-slate-500 text-slate-500 hover:bg-slate-800 hover:text-slate-100;
-}
+@import "tailwindcss";

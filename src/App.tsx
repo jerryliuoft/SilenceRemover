@@ -21,7 +21,7 @@ const App: Component = () => {
           {(video) => <VideoEditor video={video()}></VideoEditor>}
         </Show>
         <Show when={!video()}>
-          <div class="card mx-auto py-6 sm:px-6 lg:px-8">
+          <div class="bg-white shadow-lg rounded-md m-4 mx-auto py-6 sm:px-6 lg:px-8">
             <Uploader setVideo={setVideo} />
           </div>
         </Show>

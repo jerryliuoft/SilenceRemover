@@ -19,13 +19,13 @@ const VideoEditor: Component<{
   return (
     <div>
       <div class="flex flex-auto">
-        <div class="card">
+        <div class="bg-white shadow-lg rounded-md m-4">
           <VideoPlayer
             setVideoRef={setvideoPlayerRef}
             videoUrl={videoUrl()}
           ></VideoPlayer>
         </div>
-        <div class="card flex flex-1 flex-col">
+        <div class="bg-white shadow-lg rounded-md m-4 flex flex-1 flex-col">
           <SilentConfigControls ws={wavesurferRef()!}></SilentConfigControls>
           <VideoRender
             wavesurferRef={wavesurferRef()!}
@@ -33,7 +33,7 @@ const VideoEditor: Component<{
           ></VideoRender>
         </div>
       </div>
-      <div class="card">
+      <div class="bg-white shadow-lg rounded-md m-4">
         <Show when={videoPlayerRef() && wavesurferRef()}>
           <VideoPlayerControls
             videoPlayerRef={videoPlayerRef()!}

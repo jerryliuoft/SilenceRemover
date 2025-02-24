@@ -36,7 +36,12 @@ const SoundPlayer: Component<{
     // KEEP THE PLUGINS IN THIS ORDER, because they are retrieved using an array so order matters
     ws.registerPlugin(Timeline.create());
     const wsRegions = ws.registerPlugin(RegionPlugin.create());
-    ws.registerPlugin(ZoomPlugin.create());
+    ws.registerPlugin(
+      ZoomPlugin.create({
+        scale: 0.25,
+        maxZoom: 100,
+      })
+    );
 
     ws.on("ready", () => {
       setReady(true);
