@@ -3,8 +3,6 @@ import Uploader from "./components/Uploader";
 import VideoEditor from "./components/VideoEditor";
 
 const App: Component = () => {
-  const [video, setVideo] = createSignal<File>();
-
   return (
     <div class="bg-slate-100">
       <header class="bg-white shadow">
@@ -17,14 +15,7 @@ const App: Component = () => {
         </div>
       </header>
       <main class="h-screen">
-        <Show when={video()}>
-          {(video) => <VideoEditor video={video()}></VideoEditor>}
-        </Show>
-        <Show when={!video()}>
-          <div class="bg-white shadow-lg rounded-md m-4 mx-auto py-6 sm:px-6 lg:px-8">
-            <Uploader setVideo={setVideo} />
-          </div>
-        </Show>
+        <VideoEditor></VideoEditor>
         <footer class="bg-white rounded-lg m-4 min-h-fit text-right mt-32">
           <div class="m-4">
             <p class="text-slate-600 font-semibold text-sm">

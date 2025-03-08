@@ -1,7 +1,7 @@
 import { Component, Setter } from "solid-js";
 
 const Uploader: Component<{
-  setVideo: Setter<File>;
+  setVideo: Setter<File | undefined>;
 }> = (props) => {
   const uploadFile = async (fileInput: FileList | null | undefined) => {
     if (!fileInput) return;

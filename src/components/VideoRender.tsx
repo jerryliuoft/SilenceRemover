@@ -7,7 +7,7 @@ import { timelineExport } from "./TimelineExport";
 import Dialog from "./Dialog";
 
 const VideoRender: Component<{
-  video: File;
+  video: File | undefined;
   wavesurferRef: WaveSurfer;
 }> = (props) => {
   let ffmpeg: FFmpeg;
@@ -23,7 +23,8 @@ const VideoRender: Component<{
 
   // Loading ffmpeg
   const load = async () => {
-    const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.4/dist/esm";
+    const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/esm";
+    // const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
 
     // toBlobURL is used to bypass CORS issue, urls with the same
     // domain can be used directly.
@@ -33,10 +34,10 @@ const VideoRender: Component<{
         `${baseURL}/ffmpeg-core.wasm`,
         "application/wasm"
       ),
-      workerURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.worker.js`,
-        "text/javascript"
-      ),
+      // workerURL: await toBlobURL(
+      //   `${baseURL}/ffmpeg-core.worker.js`,
+      //   "text/javascript"
+      // ),
     });
     console.log("ffmpeg is loaded");
     console.log({ crossOriginIsolated });
@@ -46,6 +47,8 @@ const VideoRender: Component<{
   createEffect(() => {
     ffmpeg = new FFmpeg();
     ffmpeg.on("log", ({ type, message }) => {
+      console.log({ type, message });
+
       if (type !== "info") {
         setMessage(message);
       }
@@ -118,8 +121,8 @@ const VideoRender: Component<{
     await ffmpeg.exec([
       "-i",
       "video.mp4",
-      "-threads", // -threads 4 is to solve chrome not able to auto detect threads and hangs on mt.
-      "4",
+      // "-threads", // -threads 4 is to solve chrome not able to auto detect threads and hangs on mt.
+      // "4",
       "-vf",
       "select='" + regionCmd + "',setpts=N/FRAME_RATE/TB",
       "-af",
@@ -167,7 +170,7 @@ const VideoRender: Component<{
         <a
           type="button"
           href={download()}
-          download="FreeSilenceRemover.mp4"
+          download
           class="inline-flex w-full justify-center rounded-md bg-lime-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-lime-400 sm:ml-3 sm:w-auto"
         >
           Download

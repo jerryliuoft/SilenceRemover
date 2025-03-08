@@ -1,35 +1,44 @@
-import { Component, Show, createSignal } from "solid-js";
+import { Component, Show, createSignal, createMemo } from "solid-js";
 import VideoPlayer from "./VideoPlayer";
 import VideoPlayerControls from "./VideoPlayerControls";
 import SoundPlayer from "./SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
 import VideoRender from "./VideoRender";
 import SilentConfigControls from "./SilentConfigControls";
+import Uploader from "./Uploader";
 
-const VideoEditor: Component<{
-  video: File;
-}> = (props) => {
+const VideoEditor: Component<{}> = () => {
   const [videoPlayerRef, setvideoPlayerRef] = createSignal<HTMLVideoElement>();
   const [wavesurferRef, setWavesurferRef] = createSignal<WaveSurfer>();
+  const [video, setVideo] = createSignal<File>();
 
-  const videoUrl = () => {
-    return props.video ? URL.createObjectURL(props.video) : "";
-  };
+  const videoUrl = createMemo(() => {
+    return video() ? URL.createObjectURL(video()!) : "";
+  });
 
   return (
     <div>
       <div class="flex flex-auto">
-        <div class="bg-white shadow-lg rounded-md m-4">
-          <VideoPlayer
-            setVideoRef={setvideoPlayerRef}
-            videoUrl={videoUrl()}
-          ></VideoPlayer>
+        <div class="bg-white shadow-lg rounded-md m-4 w-1/3">
+          <Show
+            when={videoUrl()}
+            fallback={
+              <div class="flex items-center justify-center h-full text-gray-500">
+                Please first select a video
+              </div>
+            }
+          >
+            <VideoPlayer
+              setVideoRef={setvideoPlayerRef}
+              videoUrl={videoUrl()}
+            ></VideoPlayer>
+          </Show>
         </div>
         <div class="bg-white shadow-lg rounded-md m-4 flex flex-1 flex-col">
           <SilentConfigControls ws={wavesurferRef()!}></SilentConfigControls>
           <VideoRender
             wavesurferRef={wavesurferRef()!}
-            video={props.video}
+            video={video()}
           ></VideoRender>
         </div>
       </div>
@@ -38,14 +47,23 @@ const VideoEditor: Component<{
           <VideoPlayerControls
             videoPlayerRef={videoPlayerRef()!}
             wavesurferRef={wavesurferRef()!}
-            videoName={props.video.name}
+            videoName={video()?.name || ""}
           ></VideoPlayerControls>
         </Show>
-        <SoundPlayer
-          videoUrl={videoUrl()}
-          setWavesurferRef={setWavesurferRef}
-          videoName={props.video.name}
-        ></SoundPlayer>
+        <Show
+          when={videoPlayerRef()}
+          fallback={
+            <div>
+              <Uploader setVideo={setVideo}></Uploader>
+            </div>
+          }
+        >
+          <SoundPlayer
+            videoUrl={videoUrl()}
+            setWavesurferRef={setWavesurferRef}
+            videoName={video()?.name || ""}
+          ></SoundPlayer>
+        </Show>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export interface Region {
 
 const SoundPlayer: Component<{
   videoUrl: string;
-  setWavesurferRef: Setter<WaveSurfer>;
+  setWavesurferRef: Setter<WaveSurfer | undefined>;
   videoName: string;
 }> = (props) => {
   const [ready, setReady] = createSignal(false);
