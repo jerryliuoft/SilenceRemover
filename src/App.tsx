@@ -1,5 +1,5 @@
-import { createSignal, type Component, createEffect, Show } from "solid-js";
-import Uploader from "./components/Uploader";
+import { type Component } from "solid-js";
+import WhisperAI from "./components/WhisperAI";
 import VideoEditor from "./components/VideoEditor";
 
 const App: Component = () => {
@@ -15,6 +15,7 @@ const App: Component = () => {
         </div>
       </header>
       <main class="h-screen">
+        <WhisperAI></WhisperAI>
         <VideoEditor></VideoEditor>
         <footer class="bg-white rounded-lg m-4 min-h-fit text-right mt-32">
           <div class="m-4">
