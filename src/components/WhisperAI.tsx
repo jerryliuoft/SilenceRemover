@@ -11,7 +11,7 @@ const WhisperAI: Component<{}> = (props) => {
   let context = null;
   let audio = null;
 
-  const [selectedLanguage, setSelectedLanguage] = createSignal("en");
+  const [selectedLanguage, setSelectedLanguage] = createSignal("auto");
 
   function storeFS(fname = "whisper.bin", buf) {
     try {
@@ -86,16 +86,13 @@ const WhisperAI: Component<{}> = (props) => {
 
             if (audio.length > 30 * 60 * 16000) {
               audio = audio.slice(0, 30 * 60 * 16000);
-              console.log("js: truncated audio to first 30 seconds");
+              console.log("js: truncated audio to first 30 minutes");
             }
-
-            setAudio(audio);
           });
         },
         function (e) {
           console.log("js: error decoding audio: " + e);
           audio = null;
-          setAudio(audio);
         }
       );
     };
@@ -132,7 +129,7 @@ const WhisperAI: Component<{}> = (props) => {
           audio,
           selectedLanguage(),
           8,
-          false
+          translate
         );
         console.log("js: full_default returned: " + ret);
         if (ret) {
@@ -178,6 +175,33 @@ const WhisperAI: Component<{}> = (props) => {
           class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lime-50 file:text-lime-700 hover:file:bg-lime-100"
           onChange={loadAudio}
         />
+      </div>
+      <div>
+        <label
+          for="language"
+          class="block text-sm font-medium text-gray-700 mt-4"
+        >
+          Select Language:
+        </label>
+        <select
+          id="language"
+          name="language"
+          class="mt-1 block w-full text-sm text-gray-500"
+          onChange={(e) => setSelectedLanguage(e.target.value)}
+        >
+          <option value="">Auto</option>
+          <option value="en">English</option>
+          <option value="ar">Arabic</option>
+          <option value="zh">Chinese</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="hi">Hindi</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="pt">Portuguese</option>
+          <option value="ru">Russian</option>
+          <option value="es">Spanish</option>
+        </select>
       </div>
       <button
         class="rounded-lg font-semibold py-2 px-4 shadow-lg bg-lime-100 hover:bg-lime-500 hover:text-white m-2"

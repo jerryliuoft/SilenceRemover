@@ -1,11 +1,11 @@
 import { Component, Show, createSignal, createMemo } from "solid-js";
-import VideoPlayer from "./VideoPlayer";
-import VideoPlayerControls from "./VideoPlayerControls";
-import SoundPlayer from "./SoundPlayer";
+import VideoPlayer from "../components/VideoPlayer";
+import VideoPlayerControls from "../components/VideoPlayerControls";
+import SoundPlayer from "../components/SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
-import VideoRender from "./VideoRender";
-import SilentConfigControls from "./SilentConfigControls";
-import Uploader from "./Uploader";
+import VideoRender from "../components/export/VideoRender";
+import SilentConfigControls from "../components/SilentConfigControls";
+import Uploader from "../components/Uploader";
 
 const VideoEditor: Component<{}> = () => {
   const [videoPlayerRef, setvideoPlayerRef] = createSignal<HTMLVideoElement>();

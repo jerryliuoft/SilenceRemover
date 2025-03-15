@@ -4,7 +4,7 @@ import { fetchFile, toBlobURL } from "@ffmpeg/util";
 import WaveSurfer from "wavesurfer.js";
 import RegionPlugin, { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import { timelineExport } from "./TimelineExport";
-import Dialog from "./Dialog";
+import Dialog from "../common/Dialog";
 
 const VideoRender: Component<{
   video: File | undefined;

@@ -1,10 +1,9 @@
-import { Component, Setter, Show, createSignal } from "solid-js";
+import { Component, Setter, Show, createSignal, onCleanup } from "solid-js";
 import WaveSurfer from "wavesurfer.js";
 import Timeline from "wavesurfer.js/dist/plugins/timeline.js";
 import RegionPlugin from "wavesurfer.js/dist/plugins/regions.js";
 import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.js";
 import { addRegions, extractRegions } from "./SilentHelper";
-import { IoStorefrontOutline } from "solid-icons/io";
 
 export interface Region {
   start: number;
@@ -27,9 +26,7 @@ const SoundPlayer: Component<{
       url: props.videoUrl,
       // Set a bar width
       barWidth: 2,
-      // Optionally, specify the spacing between bars
       barGap: 1,
-      // And the bar radius
       barRadius: 1,
       normalize: true,
     });
@@ -76,6 +73,11 @@ const SoundPlayer: Component<{
     });
 
     props.setWavesurferRef(ws);
+
+    // Cleanup on component unmount
+    onCleanup(() => {
+      ws.destroy();
+    });
   };
 
   return (

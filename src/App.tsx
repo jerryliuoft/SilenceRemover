@@ -1,6 +1,6 @@
 import { type Component } from "solid-js";
 import WhisperAI from "./components/WhisperAI";
-import VideoEditor from "./components/VideoEditor";
+import VideoEditor from "./pages/VideoEditor";
 
 const App: Component = () => {
   return (

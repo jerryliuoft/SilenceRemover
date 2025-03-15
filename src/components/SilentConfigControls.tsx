@@ -1,8 +1,8 @@
 import { Component, Show, createSignal } from "solid-js";
 import { analyzeRegions, formatTime } from "./SilentHelper";
 import WaveSurfer from "wavesurfer.js";
-import SliderInput from "./SliderInput";
-import Dialog from "./Dialog";
+import SliderInput from "./common/SliderInput";
+import Dialog from "./common/Dialog";
 
 const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
   const [minSilentVal, setminSilentVal] = createSignal(5);
