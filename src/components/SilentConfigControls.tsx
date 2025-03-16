@@ -1,5 +1,5 @@
 import { Component, Show, createSignal } from "solid-js";
-import { analyzeRegions, formatTime } from "./SilentHelper";
+import { analyzeRegions, formatTime } from "../services/SilentHelper";
 import WaveSurfer from "wavesurfer.js";
 import SliderInput from "./common/SliderInput";
 import Dialog from "./common/Dialog";

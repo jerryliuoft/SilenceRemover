@@ -4,7 +4,7 @@ import WaveSurfer from "wavesurfer.js";
 import RegionPlugin, { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import { IoPauseOutline } from "solid-icons/io";
 import { IoPlayOutline } from "solid-icons/io";
-import { formatTime } from "./SilentHelper";
+import { formatTime } from "../services/SilentHelper";
 
 const VideoPlayerControls: Component<{
   videoPlayerRef: HTMLVideoElement;
@@ -44,23 +44,6 @@ const VideoPlayerControls: Component<{
 
   //   Get the relevant video information for the ref
   props.wavesurferRef.on("timeupdate", setCurrentTime);
-
-  // When audio playing /paused, make sure the video syncs
-  props.wavesurferRef.on("play", () => {
-    props.videoPlayerRef.currentTime = props.wavesurferRef.getCurrentTime();
-    props.videoPlayerRef.play();
-    setPlaying(true);
-    // TODO this is highly inefficient, should move it out and calculate else where
-    createRegionMap();
-  });
-  props.wavesurferRef.on("pause", () => {
-    props.videoPlayerRef.currentTime = props.wavesurferRef.getCurrentTime();
-    props.videoPlayerRef.pause();
-    setPlaying(false);
-  });
-  props.wavesurferRef.on("seeking", () => {
-    props.videoPlayerRef.currentTime = props.wavesurferRef.getCurrentTime();
-  });
 
   const wsRegions = props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
   const createRegionMap = () => {
@@ -115,7 +98,7 @@ const VideoPlayerControls: Component<{
   wsRegions.on("destroy", createRegionMap);
   wsRegions.on("region-updated", createRegionMap);
 
-  const regionClickCB = (region: Region) => {
+  const removeRegion = (region: Region) => {
     region.remove();
   };
 
@@ -175,9 +158,9 @@ const VideoPlayerControls: Component<{
                 const wsRegions =
                   props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
                 if (checked) {
-                  wsRegions.on("region-clicked", regionClickCB);
+                  wsRegions.on("region-clicked", removeRegion);
                 } else {
-                  wsRegions.un("region-clicked", regionClickCB);
+                  wsRegions.un("region-clicked", removeRegion);
                 }
               }}
             ></input>

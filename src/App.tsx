@@ -15,7 +15,7 @@ const App: Component = () => {
         </div>
       </header>
       <main class="h-screen">
-        <WhisperAI></WhisperAI>
+        {/* <WhisperAI></WhisperAI> */}
         <VideoEditor></VideoEditor>
         <footer class="bg-white rounded-lg m-4 min-h-fit text-right mt-32">
           <div class="m-4">

@@ -1,19 +1,43 @@
-import { Component, Show, createSignal, createMemo } from "solid-js";
-import VideoPlayer from "../components/VideoPlayer";
+import {
+  Component,
+  Show,
+  createSignal,
+  createMemo,
+  createEffect,
+} from "solid-js";
+import VideoPlayer from "../components/common/VideoPlayer";
 import VideoPlayerControls from "../components/VideoPlayerControls";
 import SoundPlayer from "../components/SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
 import VideoRender from "../components/export/VideoRender";
 import SilentConfigControls from "../components/SilentConfigControls";
 import Uploader from "../components/Uploader";
+import { extractPeaksData } from "../services/AudioService"; // Import the helper function
 
 const VideoEditor: Component<{}> = () => {
   const [videoPlayerRef, setvideoPlayerRef] = createSignal<HTMLVideoElement>();
   const [wavesurferRef, setWavesurferRef] = createSignal<WaveSurfer>();
   const [video, setVideo] = createSignal<File>();
+  const [audioData, setAudioData] = createSignal<ArrayBuffer>(); // New signal for audio data
+  const [peakData, setPeakData] = createSignal<number[][]>(); // New signal for peak data
+  const [vidoeDuration, setVideoDuration] = createSignal<number>(0);
 
   const videoUrl = createMemo(() => {
     return video() ? URL.createObjectURL(video()!) : "";
+  });
+
+  // Extract audio data and peak data when video is set
+  createEffect(async () => {
+    if (video()) {
+      console.log("Extracting audio data and peaks data...");
+      // console.log("Extracting audio data...");
+      // const data = await extractAudioData(video()!);
+      // setAudioData(data);
+
+      const peaks = await extractPeaksData(video()!);
+      setPeakData(peaks.peaks);
+      setVideoDuration(peaks.duration);
+    }
   });
 
   return (
@@ -51,7 +75,7 @@ const VideoEditor: Component<{}> = () => {
           ></VideoPlayerControls>
         </Show>
         <Show
-          when={videoPlayerRef()}
+          when={videoPlayerRef() && peakData()}
           fallback={
             <div>
               <Uploader setVideo={setVideo}></Uploader>
@@ -59,9 +83,11 @@ const VideoEditor: Component<{}> = () => {
           }
         >
           <SoundPlayer
-            videoUrl={videoUrl()}
+            duration={vidoeDuration()}
             setWavesurferRef={setWavesurferRef}
             videoName={video()?.name || ""}
+            videoPlayerRef={videoPlayerRef()!}
+            peakData={peakData()!}
           ></SoundPlayer>
         </Show>
       </div>

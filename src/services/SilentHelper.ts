@@ -1,5 +1,5 @@
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions";
-import { Region } from "./SoundPlayer";
+import { Region } from "../components/SoundPlayer";
 import WaveSurfer from "wavesurfer.js";
 
 export interface SilentConfig {
