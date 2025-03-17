@@ -15,7 +15,6 @@ const SoundPlayer: Component<{
   peakData: number[][];
 }> = (props) => {
   console.log("SoundPlayer rendering");
-  console.log("props", props);
   const [ready, setReady] = createSignal(false);
 
   return (

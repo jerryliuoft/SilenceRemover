@@ -3,7 +3,14 @@ export async function extractAudioData(
 ): Promise<Float32Array | null> {
   try {
     const chunkSize = 1024 * 1024 * 1000; // 1000MB chunks
-    const audioBuffer = await readAndDecodeAudioInChunks(file, chunkSize);
+    let audioBuffer: AudioBuffer;
+
+    if (file.size <= chunkSize) {
+      audioBuffer = await readAndDecodeAudio(file);
+    } else {
+      audioBuffer = await readAndDecodeAudioInChunks(file, chunkSize);
+    }
+
     const renderedBuffer = await renderOfflineAudio(audioBuffer);
 
     let audio = renderedBuffer.getChannelData(0);
@@ -45,8 +52,16 @@ export async function extractPeaksData(
     console.log("extractPeaksData: extracting peaks from file:", file.name);
 
     const chunkSize = 1024 * 1024 * 1600; // 1600MB chunks
-    const audioBuffer = await readAndDecodeAudioInChunks(file, chunkSize);
+    let audioBuffer: AudioBuffer;
+
+    if (file.size <= chunkSize) {
+      audioBuffer = await readAndDecodeAudio(file);
+    } else {
+      audioBuffer = await readAndDecodeAudioInChunks(file, chunkSize);
+    }
+
     console.log("extractPeaksData: audio loaded, size: " + audioBuffer.length);
+    console.log(audioBuffer);
 
     const peaks = calculatePeaks(audioBuffer, 10000); // 512 is the number of samples per peak
     const duration = audioBuffer.duration;
@@ -142,6 +157,7 @@ export async function readAndDecodeAudioInChunks(
     offset += chunkSize;
   }
 
+  console.log("Combining audio chunks");
   return combineAudioBuffers(audioContext, chunks);
 }
 
@@ -170,4 +186,10 @@ function combineAudioBuffers(
   }
 
   return combinedBuffer;
+}
+
+export async function readAndDecodeAudio(file: File): Promise<AudioBuffer> {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const arrayBuffer = await file.arrayBuffer();
+  return audioContext.decodeAudioData(arrayBuffer);
 }

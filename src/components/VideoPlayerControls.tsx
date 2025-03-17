@@ -5,6 +5,7 @@ import RegionPlugin, { Region } from "wavesurfer.js/dist/plugins/regions.js";
 import { IoPauseOutline } from "solid-icons/io";
 import { IoPlayOutline } from "solid-icons/io";
 import { formatTime } from "../services/SilentHelper";
+import { setupWaveSurferEvents } from "../services/WavesurferService";
 
 const VideoPlayerControls: Component<{
   videoPlayerRef: HTMLVideoElement;
@@ -15,9 +16,6 @@ const VideoPlayerControls: Component<{
   const [currentTime, setCurrentTime] = createSignal(0);
   const [duration, setduration] = createSignal(0);
   const [playing, setPlaying] = createSignal(false);
-  const [nextRegionMap, setNextRegionMap] = createSignal<{
-    [id: string]: Region;
-  }>();
 
   const event = useKeyDownEvent();
   // Keyboard Controls
@@ -46,57 +44,8 @@ const VideoPlayerControls: Component<{
   props.wavesurferRef.on("timeupdate", setCurrentTime);
 
   const wsRegions = props.wavesurferRef.getActivePlugins()[1] as RegionPlugin;
-  const createRegionMap = () => {
-    // Check current region and get the next region to be continued playing
-    // Loop through all the regions and create a map of the next region to play when the current one ends
-    const regionMap: { [id: string]: Region } = {};
-    const regions = wsRegions.getRegions().sort((a, b) => {
-      if (a.start < b.start) {
-        return -1;
-      } else if (a.start > b.start) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    regions.forEach((region: Region, idx: number) => {
-      regionMap[region.id] = regions[idx + 1];
-    });
-    setNextRegionMap(regionMap);
-  };
 
-  // Save it to disk to be restored when user refreshes page
-  createEffect(() => {
-    if (!nextRegionMap() || props.videoName.length < 1) {
-      return;
-    }
-    localStorage.setItem(
-      "zones",
-      JSON.stringify({
-        file: props.videoName,
-        region: wsRegions.getRegions(),
-      })
-    );
-  });
-
-  const regionOutCB = (region: Region) => {
-    const map = nextRegionMap();
-    if (!map) {
-      createRegionMap();
-      return;
-    }
-    if (props.wavesurferRef.isPlaying()) {
-      if (map[region.id]) {
-        map[region.id].play();
-      } else {
-        props.wavesurferRef.pause();
-      }
-    }
-  };
-  wsRegions.on("region-out", regionOutCB);
-  wsRegions.on("region-created", createRegionMap);
-  wsRegions.on("destroy", createRegionMap);
-  wsRegions.on("region-updated", createRegionMap);
+  setupWaveSurferEvents(props.wavesurferRef, wsRegions);
 
   const removeRegion = (region: Region) => {
     region.remove();
