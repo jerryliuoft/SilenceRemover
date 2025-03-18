@@ -42,9 +42,10 @@ function renderOfflineAudio(audioBuffer: AudioBuffer): Promise<AudioBuffer> {
   return offlineContext.startRendering();
 }
 
-export async function extractPeaksData(
-  file: File
-): Promise<{ peaks: number[][]; duration: number }> {
+export const extractPeaksData = async (
+  file: File,
+  setProgress: (progress: number) => void
+): Promise<{ peaks: number[][]; duration: number }> => {
   try {
     if (!file) {
       throw new Error("No file provided");
@@ -53,6 +54,7 @@ export async function extractPeaksData(
 
     const chunkSize = 1024 * 1024 * 1600; // 1600MB chunks
     let audioBuffer: AudioBuffer;
+    setProgress(25);
 
     if (file.size <= chunkSize) {
       audioBuffer = await readAndDecodeAudio(file);
@@ -63,15 +65,20 @@ export async function extractPeaksData(
     console.log("extractPeaksData: audio loaded, size: " + audioBuffer.length);
     console.log(audioBuffer);
 
+    setProgress(50);
+
     const peaks = calculatePeaks(audioBuffer, 10000); // 512 is the number of samples per peak
     const duration = audioBuffer.duration;
 
+    setProgress(75);
+
     return { peaks, duration };
   } catch (e) {
+    setProgress(-1);
     console.log("extractPeaksData: error extracting peaks: " + e);
     return { peaks: [], duration: 0 };
   }
-}
+};
 
 function calculatePeaks(
   audioBuffer: AudioBuffer,

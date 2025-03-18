@@ -2,7 +2,7 @@ import { Component, Show, createSignal } from "solid-js";
 import { analyzeRegions, formatTime } from "../services/SilentHelper";
 import WaveSurfer from "wavesurfer.js";
 import SliderInput from "./common/SliderInput";
-import Dialog from "./common/Dialog";
+import Dialog from "./common/Dialog/Dialog";
 
 const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
   const [minSilentVal, setminSilentVal] = createSignal(5);
@@ -10,8 +10,6 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
   const [prepad, setprepad] = createSignal(0.2);
   const [postpad, setpostpad] = createSignal(0.2);
   const [newLen, setnewLen] = createSignal(0);
-  const [ignoreWarning, setIgnoreWarning] = createSignal(false);
-  const [showWarning, setShowWarning] = createSignal(false);
   const cutPercent = () => {
     if (props.ws) {
       return Math.floor(
@@ -87,48 +85,12 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
             {formatTime(newLen())}
           </p>
         </Show>
-        <div class="flex items-center mb-4">
-          <input
-            id="checkbox"
-            checked={ignoreWarning()}
-            onClick={(e) => {
-              const checked = (e.target as HTMLInputElement).checked;
-              setIgnoreWarning(checked);
-            }}
-            type="checkbox"
-            value=""
-            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          ></input>
-          <label
-            for="checkbox"
-            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-          >
-            Ignore analyze override warning
-          </label>
-        </div>
         <button
           class="rounded-lg font-semibold py-2 px-4 shadow-lg w-full hover:bg-sky-500 hover:text-white bg-sky-100 text-slate-900"
-          onClick={() => (ignoreWarning() ? analyze() : setShowWarning(true))}
+          onClick={() => analyze()}
         >
           Analyze
         </button>
-        <Dialog
-          title="You will override your current changes"
-          description="This will replace the existing analyze result and any changes you've made."
-          isOpen={showWarning()}
-          onCancel={() => setShowWarning(false)}
-        >
-          <button
-            type="button"
-            class="transition-opacity delay-100 inline-flex w-full justify-center rounded-md bg-lime-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-lime-600 sm:ml-3 sm:w-auto"
-            onClick={() => {
-              analyze();
-              setShowWarning(false);
-            }}
-          >
-            Confirm
-          </button>
-        </Dialog>
       </div>
     </div>
   );

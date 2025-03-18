@@ -9,7 +9,6 @@ interface Props {
   videoPlayerRef: HTMLMediaElement;
   peakData: any;
   duration: number;
-  videoName: string;
   setWavesurferRef: Setter<WaveSurfer | undefined>;
 }
 
@@ -107,16 +106,16 @@ export const setupWaveSurferEvents = (ws: WaveSurfer, wsRegions: any): void => {
 const handleWaveSurferEvents = (
   ws: WaveSurfer,
   wsRegions: any,
-  props: Props,
-  setReady: (ready: boolean) => void
+  setProgress: (progress: number) => void
 ): void => {
   ws.on("ready", () => {
     console.log("WaveSurfer is ready");
-    setReady(true);
+    setProgress(100);
   });
 
   ws.on("loading", (progress: number) => {
     console.log("loading", progress);
+    setProgress(75 + progress * 0.25);
   });
 
   ws.on("decode", (duration: number) => {
@@ -141,10 +140,14 @@ const handleWaveSurferEvents = (
 export const initWaveSurfer = (
   wavePlayerRef: HTMLElement,
   props: Props,
-  setReady: (ready: boolean) => void
+  setProgress: (progress: number) => void
 ): void => {
+  console.log("Initializing WaveSurfer...");
   const ws = createWaveSurferInstance(wavePlayerRef, props);
+  console.log("WaveSurfer instance created");
   const wsRegions = registerWaveSurferPlugins(ws);
-  handleWaveSurferEvents(ws, wsRegions, props, setReady);
+  console.log("WaveSurfer plugins registered");
+  handleWaveSurferEvents(ws, wsRegions, setProgress);
+  console.log("WaveSurfer events handled");
   props.setWavesurferRef(ws);
 };

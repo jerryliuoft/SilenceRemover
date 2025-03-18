@@ -8,8 +8,22 @@ const Uploader: Component<{
     props.setVideo(fileInput[0]);
   };
 
+  const handleFileInput = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      uploadFile(input.files);
+    }
+  };
+
   return (
     <div>
+      <input
+        type="file"
+        accept="video/*"
+        style={{ display: "none" }}
+        id="fileInput"
+        onchange={handleFileInput}
+      />
       <div
         ondrop={(ev) => {
           ev.preventDefault();
@@ -18,9 +32,10 @@ const Uploader: Component<{
         ondragover={(e) => {
           e.preventDefault();
         }}
-        class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+        onclick={() => document.getElementById("fileInput")?.click()}
+        class="mt-2 flex justify-center items-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 min-h-[50vh] cursor-pointer"
       >
-        <div class="text-center">
+        <div class="text-center flex flex-col items-center justify-center">
           <svg
             class="mx-auto h-12 w-12 text-gray-300"
             viewBox="0 0 24 24"
@@ -34,20 +49,7 @@ const Uploader: Component<{
             />
           </svg>
           <div class="mt-4 flex text-base leading-6 text-gray-600 justify-center">
-            <label
-              for="file-upload"
-              class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-            >
-              <span>Pick a video</span>
-              <input
-                id="file-upload"
-                name="file-upload"
-                type="file"
-                class="sr-only"
-                onChange={(e) => uploadFile(e.target.files)}
-              />
-            </label>
-            <p class="pl-1 ">or drag and drop here</p>
+            <p class="pl-1 ">Click here or drag and drop the video</p>
           </div>
           <p class="text-base leading-5 text-gray-600">
             supports mp4, mov etc (2gb limit for chrome)
