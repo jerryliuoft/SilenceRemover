@@ -1,5 +1,6 @@
 import { Component } from "solid-js";
 import ExportButton from "./export/ExportButton";
+import CoffeeButton from "./common/CofeeButton";
 
 const HeaderSection: Component<{
   isSidePanelOpen: boolean;
@@ -20,10 +21,11 @@ const HeaderSection: Component<{
           </h1>
         </a>
         <div class="flex items-center">
+          <CoffeeButton />
           <ExportButton
             wavesurferRef={props.wavesurferRef()!}
             video={props.video()}
-          ></ExportButton>
+          />
           <button
             class="rounded-lg font-semibold py-2 px-4 ml-10 shadow-lg bg-neutral-100 hover:bg-neutral-500 text-black m-2 cursor-pointer hover:text-white"
             onClick={handleClick}
