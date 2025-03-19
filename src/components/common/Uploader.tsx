@@ -52,7 +52,7 @@ const Uploader: Component<{
             <p class="pl-1 ">Click here or drag and drop the video</p>
           </div>
           <p class="text-base leading-5 text-gray-600">
-            supports mp4, mov etc (2gb limit for chrome)
+            supports mp4, mov and other video formats
           </p>
         </div>
       </div>

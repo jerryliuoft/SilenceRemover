@@ -21,13 +21,21 @@ const LoadingDialog: Component<{
                 Loading...
               </span>
             </div>
-            <p class="text-sm text-slate-500 mt-4 text-center">
-              Loading progress: {props.progress}%
-            </p>
-            <p class="text-sm text-slate-500 text-center">
-              Give it like 10 seconds or so, bigger the file, longer the load,
-              unless you got a very expensive pc, then I'm jealous
-            </p>
+            {props.progress === -1 ? (
+              <p class="text-sm text-red-500 mt-4 text-center">
+                Failed to decode audio of this video file.
+              </p>
+            ) : (
+              <>
+                <p class="text-sm text-slate-500 mt-4 text-center">
+                  Loading progress: {props.progress}%
+                </p>
+                <p class="text-sm text-slate-500 text-center">
+                  Give it like 10 seconds or so, bigger the file, longer the
+                  load, unless you got a very expensive pc, then I'm jealous
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,13 +1,9 @@
 import { Component, createSignal } from "solid-js";
 import makeWhisper from "../libmain";
 
-const INDEXEDDB_NAME = "videoSilenceRemover";
-const INDEXEDDB_VERSION = 1;
-
 const WhisperAI: Component<{}> = (props) => {
   let whisperModule = null;
   let instance = null;
-  let model_whisper = "";
   let context = null;
   let audio = null;
 

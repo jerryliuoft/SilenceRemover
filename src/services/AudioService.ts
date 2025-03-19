@@ -67,7 +67,7 @@ export const extractPeaksData = async (
 
     setProgress(50);
 
-    const peaks = calculatePeaks(audioBuffer, 10000); // 512 is the number of samples per peak
+    const peaks = calculatePeaks(audioBuffer, 1000); // 512 is the number of samples per peak
     const duration = audioBuffer.duration;
 
     setProgress(75);

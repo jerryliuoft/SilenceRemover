@@ -33,7 +33,7 @@ const SoundPlayer: Component<{
         setWavesurferRef: props.setWavesurferRef,
       };
       initWaveSurfer(waveSurferDiv!, initWaveSurferProps, setProgress);
-      setReady(true);
+      setReady(progress() > 0 ? true : false);
     }
   });
 

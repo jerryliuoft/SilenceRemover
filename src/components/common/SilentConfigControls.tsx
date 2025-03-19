@@ -1,8 +1,7 @@
 import { Component, Show, createSignal } from "solid-js";
-import { analyzeRegions, formatTime } from "../services/SilentHelper";
+import { analyzeRegions, formatTime } from "../../services/SilentHelper";
 import WaveSurfer from "wavesurfer.js";
-import SliderInput from "./common/SliderInput";
-import Dialog from "./common/Dialog/Dialog";
+import SliderInput from "./SliderInput";
 
 const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
   const [minSilentVal, setminSilentVal] = createSignal(5);
@@ -34,7 +33,7 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
   };
 
   return (
-    <div class="m-2 flex flex-col justify-between flex-1 min-w-max">
+    <div class="m-2 flex flex-col justify-between flex-1 min-w-max flex-grow">
       <div>
         <h1 class="text-2xl font-semibold leading-6 text-gray-900">
           Parameters
@@ -78,15 +77,15 @@ const SilentConfigControls: Component<{ ws: WaveSurfer }> = (props) => {
           ></SliderInput>
         </div>
       </div>
-      <div class="w-full">
+      <div class="w-full mt-12">
         <Show when={newLen()}>
-          <p>
+          <p class="text-sm text-gray-700 center">
             Video is shortened by {cutPercent()}%, new duration is{" "}
             {formatTime(newLen())}
           </p>
         </Show>
         <button
-          class="rounded-lg font-semibold py-2 px-4 shadow-lg w-full hover:bg-sky-500 hover:text-white bg-sky-100 text-slate-900"
+          class="rounded-lg font-semibold py-2 px-4 mt-4 shadow-lg w-full hover:bg-sky-500 hover:text-white bg-sky-100 text-slate-900"
           onClick={() => analyze()}
         >
           Analyze
