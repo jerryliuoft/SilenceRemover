@@ -48,12 +48,14 @@ const Uploader: Component<{
               clip-rule="evenodd"
             />
           </svg>
-          <div class="mt-4 flex text-base leading-6 text-gray-600 justify-center">
-            <p class="pl-1 ">Click here or drag and drop the video</p>
+          <div class="mt-4 flex flex-col text-base leading-6 text-gray-600 justify-center">
+            <p class="pl-1">Click here or drag and drop the video</p>
+            <p>Supports MP4, MOV, and other video formats</p>
+            <p class="mt-1">
+              There is no uploading; everything runs locally on your computer.
+              If it's slow, you know why!
+            </p>
           </div>
-          <p class="text-base leading-5 text-gray-600">
-            supports mp4, mov and other video formats
-          </p>
         </div>
       </div>
     </div>
