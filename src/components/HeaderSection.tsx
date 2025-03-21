@@ -15,7 +15,8 @@ const HeaderSection: Component<{
   return (
     <header class="bg-white shadow">
       <div class="py-2 sm:px-6 lg:px-8 flex justify-between items-center">
-        <a href="https://videosilenceremover.web.app">
+        <a href="https://videosilenceremover.web.app" class="flex items-center">
+          <img src="/src/assets/LOGO.png" alt="Logo" class="h-10 w-10 mr-4" />
           <h1 class="text-3xl font-bold tracking-tight text-gray-900">
             Free silence remover
           </h1>
